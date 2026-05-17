@@ -58,11 +58,16 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
 
     // ── Firebase (désactivé temporairement) ───────────────────
-    // implementation(platform(libs.firebase.bom))
-    // implementation(libs.firebase.auth)
-    // implementation(libs.firebase.firestore)
-    // implementation(libs.google.auth)
-    // implementation(libs.facebook.login)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.firestore)
+    implementation(libs.google.auth)
+    implementation(libs.facebook.login)
+
+    // ── Google Credential Manager ─────────────────────────────
+    implementation("androidx.credentials:credentials:1.3.0")
+    implementation("androidx.credentials:credentials-play-services-auth:1.3.0")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
 
     // ── DataStore ─────────────────────────────────────────────
     implementation(libs.datastore.preferences)

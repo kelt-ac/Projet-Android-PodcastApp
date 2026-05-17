@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "945285601186",
+    "project_id": "podcastapp-3ad31",
+    "storage_bucket": "podcastapp-3ad31.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:945285601186:android:567c4bb9e749feafe904fb",
+        "android_client_info": {
+          "package_name": "com.podcastapp.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "945285601186-i67jundqf7qo3gbkfog1k238ee61gjos.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.podcastapp.android",
+            "certificate_hash": "1c22d89213f81e866399ab993d919a55698a7c14"
+          }
+        },
+        {
+          "client_id": "945285601186-jmurj8khk0n44l62srie1l1g80d0pofu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBxOWHng1lrzDuEV-R-_V93BPgesB3boaI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "945285601186-jmurj8khk0n44l62srie1l1g80d0pofu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
