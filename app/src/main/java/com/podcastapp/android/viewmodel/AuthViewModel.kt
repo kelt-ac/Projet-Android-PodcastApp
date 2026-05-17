@@ -41,6 +41,7 @@ class AuthViewModel : ViewModel() {
 
         if (email.isEmpty() || password.isEmpty()) {
             _state.value = _state.value.copy(
+                isLoggedIn = true,
                 errorMessage = "Veuillez remplir tous les champs"
             )
             return
@@ -52,6 +53,7 @@ class AuthViewModel : ViewModel() {
                 auth.signInWithEmailAndPassword(email, password).await()
                 _state.value = _state.value.copy(
                     isLoading    = false,
+                    isLoggedIn   = true,
                     errorMessage = null
                 )
             } catch (e: Exception) {
@@ -69,6 +71,7 @@ class AuthViewModel : ViewModel() {
 
         if (email.isEmpty() || password.isEmpty()) {
             _state.value = _state.value.copy(
+                isLoggedIn = true,
                 errorMessage = "Veuillez remplir tous les champs"
             )
             return
@@ -102,5 +105,6 @@ class AuthViewModel : ViewModel() {
 
     fun logout() {
         auth.signOut()
+        _state.value = AuthViewState()
     }
 }

@@ -39,6 +39,7 @@ data class AuthViewState(
     val errorMessage: String? = null,
     val isLoginTab: Boolean = true,
     val passwordVisible: Boolean = false,
+    val isLoggedIn: Boolean = false
 )
 
 sealed class AuthIntent {
