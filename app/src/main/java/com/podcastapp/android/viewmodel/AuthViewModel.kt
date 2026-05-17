@@ -1,7 +1,13 @@
 package com.podcastapp.android.viewmodel
 
+import android.content.Context
+import androidx.credentials.CredentialManager
+import androidx.credentials.GetCredentialRequest
+import androidx.credentials.exceptions.GetCredentialException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.podcastapp.android.ui.auth.AuthIntent
@@ -17,6 +23,9 @@ class AuthViewModel : ViewModel() {
 
     private val _state = MutableStateFlow(AuthViewState())
     val state: StateFlow<AuthViewState> = _state
+
+
+    private val webClientId = "945285601186-jmurj8khk0n44l62srie1l1g80d0pofu.apps.googleusercontent.com"
 
     fun handleIntent(intent: AuthIntent) {
         when (intent) {
@@ -35,13 +44,57 @@ class AuthViewModel : ViewModel() {
         }
     }
 
+    fun loginWithGoogle(context: Context) {
+        viewModelScope.launch {
+            _state.value = _state.value.copy(isLoading = true, errorMessage = null)
+            try {
+                val credentialManager = CredentialManager.create(context)
+
+                val googleIdOption = GetGoogleIdOption.Builder()
+                    .setFilterByAuthorizedAccounts(false)
+                    .setServerClientId(webClientId)
+                    .build()
+
+                val request = GetCredentialRequest.Builder()
+                    .addCredentialOption(googleIdOption)
+                    .build()
+
+                val result = credentialManager.getCredential(context, request)
+                val credential = result.credential
+
+                val googleIdTokenCredential = GoogleIdTokenCredential
+                    .createFrom(credential.data)
+
+                val firebaseCredential = GoogleAuthProvider
+                    .getCredential(googleIdTokenCredential.idToken, null)
+
+                auth.signInWithCredential(firebaseCredential).await()
+
+                _state.value = _state.value.copy(
+                    isLoading    = false,
+                    isLoggedIn   = true,
+                    errorMessage = null
+                )
+            } catch (e: GetCredentialException) {
+                _state.value = _state.value.copy(
+                    isLoading    = false,
+                    errorMessage = "Connexion Google annulée"
+                )
+            } catch (e: Exception) {
+                _state.value = _state.value.copy(
+                    isLoading    = false,
+                    errorMessage = "Erreur Google : ${e.message}"
+                )
+            }
+        }
+    }
+
     private fun login() {
         val email    = _state.value.email.trim()
         val password = _state.value.password
 
         if (email.isEmpty() || password.isEmpty()) {
             _state.value = _state.value.copy(
-                isLoggedIn = true,
                 errorMessage = "Veuillez remplir tous les champs"
             )
             return
@@ -71,7 +124,6 @@ class AuthViewModel : ViewModel() {
 
         if (email.isEmpty() || password.isEmpty()) {
             _state.value = _state.value.copy(
-                isLoggedIn = true,
                 errorMessage = "Veuillez remplir tous les champs"
             )
             return
@@ -90,6 +142,7 @@ class AuthViewModel : ViewModel() {
                 auth.createUserWithEmailAndPassword(email, password).await()
                 _state.value = _state.value.copy(
                     isLoading    = false,
+                    isLoggedIn   = true,
                     errorMessage = null
                 )
             } catch (e: Exception) {
