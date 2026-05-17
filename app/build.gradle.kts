@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.google.services)
 }
 
 android {
@@ -63,11 +64,6 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.google.auth)
     implementation(libs.facebook.login)
-
-    // ── Google Credential Manager ─────────────────────────────
-    implementation("androidx.credentials:credentials:1.3.0")
-    implementation("androidx.credentials:credentials-play-services-auth:1.3.0")
-    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
 
     // ── DataStore ─────────────────────────────────────────────
     implementation(libs.datastore.preferences)
