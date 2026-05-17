@@ -4,11 +4,13 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.podcastapp.android.core.PodcastAppTheme
+import com.podcastapp.android.ui.auth.AuthViewState
 import com.podcastapp.android.ui.auth.LoginScreen
+import com.podcastapp.android.ui.home.HomeScreen
 import com.podcastapp.android.viewmodel.AuthViewModel
 
 class MainActivity : ComponentActivity() {
@@ -20,10 +22,15 @@ class MainActivity : ComponentActivity() {
                 val viewModel: AuthViewModel = viewModel()
                 val state by viewModel.state.collectAsState()
 
-                LoginScreen(
-                    state    = state,
-                    onIntent = { viewModel.handleIntent(it) }
-                )
+                when {
+                    state.isLoggedIn -> HomeScreen(
+                        onLogout = { viewModel.logout() }
+                    )
+                    else -> LoginScreen(
+                        state    = state,
+                        onIntent = { viewModel.handleIntent(it) }
+                    )
+                }
             }
         }
     }
