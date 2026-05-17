@@ -53,6 +53,7 @@ class AuthViewModel : ViewModel() {
                 auth.signInWithEmailAndPassword(email, password).await()
                 _state.value = _state.value.copy(
                     isLoading    = false,
+                    isLoggedIn   = true,
                     errorMessage = null
                 )
             } catch (e: Exception) {
