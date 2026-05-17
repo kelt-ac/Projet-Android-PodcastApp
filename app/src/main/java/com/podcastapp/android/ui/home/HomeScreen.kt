@@ -81,6 +81,14 @@ fun HomeScreen(
                 onClear  = { viewModel.handleIntent(HomeIntent.ClearSearch) }
             )
 
+            // ── Chips catégories ───────────────────────────────────
+            CategoryChips(
+                selectedCategory   = state.selectedCategory,
+                onCategorySelected = {
+                    viewModel.handleIntent(HomeIntent.SelectCategory(it))
+                }
+            )
+
             when {
                 state.isLoading -> {
                     Box(
@@ -196,6 +204,8 @@ fun SearchBar(
         )
     )
 }
+
+
 
 @Composable
 fun SectionTitle(title: String) {
@@ -332,6 +342,47 @@ fun SearchResults(
                     onClick = { onPodcastClick(podcast) }
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun CategoryChips(
+    selectedCategory: String,
+    onCategorySelected: (String) -> Unit
+) {
+    val categories = listOf(
+        "🎵 Musique",
+        "💻 Technologie",
+        "🎭 Culture",
+        "⚽ Sport",
+        "📰 Actualités",
+        "🎓 Éducation",
+        "💼 Business",
+        "🎮 Gaming",
+        "🏥 Santé",
+        "🎬 Cinéma"
+    )
+
+    LazyRow(
+        contentPadding = PaddingValues(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier.padding(vertical = 8.dp)
+    ) {
+        items(categories) { category ->
+            val isSelected = selectedCategory == category
+            FilterChip(
+                selected = isSelected,
+                onClick  = { onCategorySelected(category) },
+                label    = { Text(category, fontSize = 12.sp) },
+                colors   = FilterChipDefaults.filterChipColors(
+                    selectedContainerColor = PrimaryDark,
+                    selectedLabelColor     = Color.White,
+                    containerColor         = Color.White,
+                    labelColor             = PrimaryDark
+                ),
+                shape = RoundedCornerShape(20.dp)
+            )
         }
     }
 }

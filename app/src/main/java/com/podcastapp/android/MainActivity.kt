@@ -25,7 +25,8 @@ class MainActivity : ComponentActivity() {
 
                 when {
                     state.isLoggedIn -> HomeScreen(
-                        onLogout = { viewModel.logout() }
+                        onLogout       = { viewModel.logout() },
+                        onPodcastClick = { podcast -> /* navigation vers détail */ }
                     )
                     else -> LoginScreen(
                         state    = state,
