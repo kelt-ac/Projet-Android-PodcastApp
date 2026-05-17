@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.google.services)
 }
 
 android {
@@ -58,11 +59,11 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
 
     // ── Firebase (désactivé temporairement) ───────────────────
-    // implementation(platform(libs.firebase.bom))
-    // implementation(libs.firebase.auth)
-    // implementation(libs.firebase.firestore)
-    // implementation(libs.google.auth)
-    // implementation(libs.facebook.login)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.firestore)
+    implementation(libs.google.auth)
+    implementation(libs.facebook.login)
 
     // ── DataStore ─────────────────────────────────────────────
     implementation(libs.datastore.preferences)
