@@ -14,13 +14,15 @@ data class HomeViewState(
     val podcasts: List<Podcast> = emptyList(),
     val searchResults: List<Podcast> = emptyList(),
     val errorMessage: String? = null,
-    val searchQuery: String = ""
+    val searchQuery: String = "",
+    val selectedCategory: String = ""
 )
 
 sealed class HomeIntent {
     object LoadPodcasts : HomeIntent()
     data class Search(val query: String) : HomeIntent()
     object ClearSearch : HomeIntent()
+    data class SelectCategory(val cat: String) : HomeIntent()
 }
 
 // ── ViewModel ──────────────────────────────────────────────
@@ -40,6 +42,31 @@ class HomeViewModel : ViewModel() {
             is HomeIntent.LoadPodcasts -> loadPodcasts()
             is HomeIntent.Search       -> search(intent.query)
             is HomeIntent.ClearSearch  -> clearSearch()
+            is HomeIntent.SelectCategory   -> selectCategory(intent.cat)
+        }
+    }
+
+    private fun selectCategory(category: String) {
+        val newCategory = if (_state.value.selectedCategory == category) "" else category
+        _state.value = _state.value.copy(selectedCategory = newCategory)
+        if (newCategory.isBlank()) {
+            loadPodcasts()
+        } else {
+            viewModelScope.launch {
+                _state.value = _state.value.copy(isLoading = true, errorMessage = null)
+                try {
+                    val results = repository.searchPodcasts(newCategory)
+                    _state.value = _state.value.copy(
+                        isLoading = false,
+                        podcasts  = results
+                    )
+                } catch (e: Exception) {
+                    _state.value = _state.value.copy(
+                        isLoading    = false,
+                        errorMessage = "Erreur : ${e.message}"
+                    )
+                }
+            }
         }
     }
 
