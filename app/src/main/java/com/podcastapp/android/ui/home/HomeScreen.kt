@@ -19,6 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.podcastapp.android.core.PrimaryDark
@@ -35,7 +36,7 @@ fun HomeScreen(
     onLogout: () -> Unit = {},
     onPodcastClick: (Podcast) -> Unit = {}
 ) {
-    val viewModel: HomeViewModel = viewModel()
+    val viewModel: HomeViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
 
     Scaffold(
