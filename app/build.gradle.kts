@@ -1,16 +1,20 @@
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt)
+    alias(libs.plugins.google.services)
 }
 
 android {
     namespace  = "com.podcastapp.android"
-    compileSdk = 36
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.podcastapp.android"
         minSdk        = 26
-        targetSdk     = 36
+        targetSdk     = 35
         versionCode   = 1
         versionName   = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -29,6 +33,10 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    kotlin {
+        jvmToolchain(17)
     }
 
     buildFeatures {
@@ -53,16 +61,25 @@ dependencies {
     // ── Navigation ────────────────────────────────────────────
     implementation(libs.androidx.navigation.compose)
 
+    // ── Hilt ──────────────────────────────────────────────────
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+    implementation(libs.hilt.navigation.compose)
+
     // ── ViewModel ─────────────────────────────────────────────
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
 
-    // ── Firebase (désactivé temporairement) ───────────────────
-    // implementation(platform(libs.firebase.bom))
-    // implementation(libs.firebase.auth)
-    // implementation(libs.firebase.firestore)
-    // implementation(libs.google.auth)
-    // implementation(libs.facebook.login)
+    // ── Firebase ──────────────────────────────────────────────
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.firestore)
+    implementation(libs.google.auth)
+
+    // ── Google Credential Manager ─────────────────────────────
+    implementation(libs.credentials)
+    implementation(libs.credentials.play.services)
+    implementation(libs.googleid)
 
     // ── DataStore ─────────────────────────────────────────────
     implementation(libs.datastore.preferences)
@@ -71,6 +88,11 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.retrofit.gson)
     implementation(libs.okhttp.logging)
+
+    // ── Room ──────────────────────────────────────────────────
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
 
     // ── Coil ──────────────────────────────────────────────────
     implementation(libs.coil.compose)
