@@ -107,4 +107,8 @@ dependencies {
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+
+    // ── Adaptive Layout ───────────────────────────────────────
+    implementation(libs.androidx.window)
+    implementation(libs.androidx.material3.window.size)
 }
