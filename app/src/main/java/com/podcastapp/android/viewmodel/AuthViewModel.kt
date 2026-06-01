@@ -12,20 +12,22 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.podcastapp.android.ui.auth.AuthIntent
 import com.podcastapp.android.ui.auth.AuthViewState
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import javax.inject.Inject
 
-class AuthViewModel : ViewModel() {
+@HiltViewModel
+class AuthViewModel @Inject constructor(
+    private val auth: FirebaseAuth
+) : ViewModel() {
 
-    private val auth = FirebaseAuth.getInstance()
+    private val webClientId = "VOTRE_WEB_CLIENT_ID_ICI"
 
     private val _state = MutableStateFlow(AuthViewState())
     val state: StateFlow<AuthViewState> = _state
-
-
-    private val webClientId = "945285601186-jmurj8khk0n44l62srie1l1g80d0pofu.apps.googleusercontent.com"
 
     fun handleIntent(intent: AuthIntent) {
         when (intent) {
@@ -37,9 +39,9 @@ class AuthViewModel : ViewModel() {
                 _state.value = _state.value.copy(isLoginTab = !_state.value.isLoginTab)
             is AuthIntent.TogglePasswordVisibility ->
                 _state.value = _state.value.copy(passwordVisible = !_state.value.passwordVisible)
-            is AuthIntent.Login -> login()
-            is AuthIntent.Register -> register()
-            is AuthIntent.LoginWithGoogle -> { }
+            is AuthIntent.Login          -> login()
+            is AuthIntent.Register       -> register()
+            is AuthIntent.LoginWithGoogle   -> { }
             is AuthIntent.LoginWithFacebook -> { }
         }
     }
@@ -49,30 +51,22 @@ class AuthViewModel : ViewModel() {
             _state.value = _state.value.copy(isLoading = true, errorMessage = null)
             try {
                 val credentialManager = CredentialManager.create(context)
-
                 val googleIdOption = GetGoogleIdOption.Builder()
                     .setFilterByAuthorizedAccounts(false)
                     .setServerClientId(webClientId)
                     .build()
-
                 val request = GetCredentialRequest.Builder()
                     .addCredentialOption(googleIdOption)
                     .build()
-
-                val result = credentialManager.getCredential(context, request)
+                val result     = credentialManager.getCredential(context, request)
                 val credential = result.credential
-
-                val googleIdTokenCredential = GoogleIdTokenCredential
-                    .createFrom(credential.data)
-
+                val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
                 val firebaseCredential = GoogleAuthProvider
                     .getCredential(googleIdTokenCredential.idToken, null)
-
                 auth.signInWithCredential(firebaseCredential).await()
-
                 _state.value = _state.value.copy(
-                    isLoading    = false,
-                    isLoggedIn   = true,
+                    isLoading  = false,
+                    isLoggedIn = true,
                     errorMessage = null
                 )
             } catch (e: GetCredentialException) {
@@ -92,21 +86,17 @@ class AuthViewModel : ViewModel() {
     private fun login() {
         val email    = _state.value.email.trim()
         val password = _state.value.password
-
         if (email.isEmpty() || password.isEmpty()) {
-            _state.value = _state.value.copy(
-                errorMessage = "Veuillez remplir tous les champs"
-            )
+            _state.value = _state.value.copy(errorMessage = "Veuillez remplir tous les champs")
             return
         }
-
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, errorMessage = null)
             try {
                 auth.signInWithEmailAndPassword(email, password).await()
                 _state.value = _state.value.copy(
-                    isLoading    = false,
-                    isLoggedIn   = true,
+                    isLoading  = false,
+                    isLoggedIn = true,
                     errorMessage = null
                 )
             } catch (e: Exception) {
@@ -121,28 +111,23 @@ class AuthViewModel : ViewModel() {
     private fun register() {
         val email    = _state.value.email.trim()
         val password = _state.value.password
-
         if (email.isEmpty() || password.isEmpty()) {
-            _state.value = _state.value.copy(
-                errorMessage = "Veuillez remplir tous les champs"
-            )
+            _state.value = _state.value.copy(errorMessage = "Veuillez remplir tous les champs")
             return
         }
-
         if (password.length < 8) {
             _state.value = _state.value.copy(
                 errorMessage = "Le mot de passe doit contenir au moins 8 caractères"
             )
             return
         }
-
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, errorMessage = null)
             try {
                 auth.createUserWithEmailAndPassword(email, password).await()
                 _state.value = _state.value.copy(
-                    isLoading    = false,
-                    isLoggedIn   = true,
+                    isLoading  = false,
+                    isLoggedIn = true,
                     errorMessage = null
                 )
             } catch (e: Exception) {

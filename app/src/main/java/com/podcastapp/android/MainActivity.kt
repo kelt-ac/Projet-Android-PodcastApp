@@ -5,7 +5,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.*
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import com.podcastapp.android.core.PodcastAppTheme
 import com.podcastapp.android.domain.model.Podcast
 import com.podcastapp.android.ui.auth.AuthIntent
@@ -14,17 +15,17 @@ import com.podcastapp.android.ui.detail.PodcastDetailScreen
 import com.podcastapp.android.ui.home.HomeScreen
 import com.podcastapp.android.viewmodel.AuthViewModel
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             PodcastAppTheme {
-                val viewModel: AuthViewModel = viewModel()
+                val viewModel: AuthViewModel = hiltViewModel()
                 val state by viewModel.state.collectAsState()
                 val context = this
 
-                // Navigation state
                 var selectedPodcast by remember { mutableStateOf<Podcast?>(null) }
 
                 when {
@@ -40,8 +41,8 @@ class MainActivity : ComponentActivity() {
                     )
 
                     selectedPodcast != null -> PodcastDetailScreen(
-                        podcast   = selectedPodcast!!,
-                        onBack    = { selectedPodcast = null },
+                        podcast     = selectedPodcast!!,
+                        onBack      = { selectedPodcast = null },
                         onSubscribe = { }
                     )
 

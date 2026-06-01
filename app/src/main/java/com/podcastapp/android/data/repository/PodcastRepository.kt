@@ -1,12 +1,14 @@
 package com.podcastapp.android.data.repository
 
-import com.podcastapp.android.data.remote.RetrofitClient
+import com.podcastapp.android.data.remote.PodcastApiService
 import com.podcastapp.android.domain.model.Podcast
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class PodcastRepository {
-
-    private val api = RetrofitClient.instance
-
+@Singleton
+class PodcastRepository @Inject constructor(
+    private val api: PodcastApiService
+) {
     suspend fun getTopPodcasts(): List<Podcast> {
         return api.getTopPodcasts().results.map { dto ->
             Podcast(
