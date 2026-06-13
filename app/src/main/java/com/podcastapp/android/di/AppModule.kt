@@ -1,12 +1,18 @@
 package com.podcastapp.android.di
 
+import android.content.Context
+import androidx.room.Room
 import com.google.firebase.auth.FirebaseAuth
 import com.podcastapp.android.data.remote.PodcastApiService
 import com.podcastapp.android.data.repository.PodcastRepository
+import com.podcastapp.android.data.local.PodcastDatabase
+import com.podcastapp.android.data.local.dao.PodcastDao
+import com.podcastapp.android.data.repository.SubscriptionRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -63,4 +69,26 @@ object AppModule {
     fun providePodcastRepository(
         api: PodcastApiService
     ): PodcastRepository = PodcastRepository(api)
+
+    // ── Room Database ─────────────────────────────────────
+    @Provides
+    @Singleton
+    fun providePodcastDatabase(
+        @ApplicationContext context: Context
+    ): PodcastDatabase = Room.databaseBuilder(
+        context,
+        PodcastDatabase::class.java,
+        "podcast_database"
+    ).build()
+
+    @Provides
+    @Singleton
+    fun providePodcastDao(database: PodcastDatabase): PodcastDao =
+        database.podcastDao()
+
+    @Provides
+    @Singleton
+    fun provideSubscriptionRepository(
+        dao: PodcastDao
+    ): SubscriptionRepository = SubscriptionRepository(dao)
 }
