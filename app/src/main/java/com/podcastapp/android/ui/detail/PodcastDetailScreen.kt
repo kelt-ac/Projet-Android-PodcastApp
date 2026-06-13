@@ -27,7 +27,8 @@ import com.podcastapp.android.domain.model.Podcast
 fun PodcastDetailScreen(
     podcast: Podcast,
     onBack: () -> Unit = {},
-    onSubscribe: (Podcast) -> Unit = {}
+    onSubscribe: (Podcast) -> Unit = {},
+    onPlayEpisode: () -> Unit = {}
 ) {
     var isSubscribed by remember { mutableStateOf(false) }
 
@@ -206,7 +207,8 @@ fun PodcastDetailScreen(
                 EpisodeItem(
                     number    = index + 1,
                     title     = "Épisode ${index + 1} — ${podcast.title}",
-                    duration  = "${20 + index * 3} min"
+                    duration  = "${20 + index * 3} min",
+                    onPlay   = onPlayEpisode
                 )
             }
         }
@@ -233,7 +235,12 @@ fun StatItem(label: String, value: String) {
 }
 
 @Composable
-fun EpisodeItem(number: Int, title: String, duration: String) {
+fun EpisodeItem(
+    number: Int,
+    title: String,
+    duration: String,
+    onPlay: () -> Unit = {}
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -250,12 +257,12 @@ fun EpisodeItem(number: Int, title: String, duration: String) {
         )
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text     = title,
-                fontSize = 13.sp,
+                text       = title,
+                fontSize   = 13.sp,
                 fontWeight = FontWeight.SemiBold,
-                color    = PrimaryDark,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
+                color      = PrimaryDark,
+                maxLines   = 2,
+                overflow   = TextOverflow.Ellipsis
             )
             Text(
                 text     = duration,
@@ -263,7 +270,7 @@ fun EpisodeItem(number: Int, title: String, duration: String) {
                 color    = TextSecondary
             )
         }
-        IconButton(onClick = { }) {
+        IconButton(onClick = onPlay) {
             Text("▶", fontSize = 18.sp, color = PrimaryDark)
         }
         HorizontalDivider(color = Color(0xFFE0E0F0))
