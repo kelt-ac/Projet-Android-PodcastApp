@@ -9,13 +9,15 @@ import com.podcastapp.android.domain.model.Podcast
 fun AdaptiveHomeScreen(
     windowSizeClass: WindowSizeClass,
     onLogout: () -> Unit = {},
-    onPodcastClick: (Podcast) -> Unit = {}
+    onPodcastClick: (Podcast) -> Unit = {},
+    onSubscriptionsClick: () -> Unit = {}
 ) {
     when (windowSizeClass.widthSizeClass) {
         WindowWidthSizeClass.Compact -> {
             HomeScreen(
                 onLogout       = onLogout,
-                onPodcastClick = onPodcastClick
+                onPodcastClick = onPodcastClick,
+                onSubscriptionsClick = onSubscriptionsClick
             )
         }
         WindowWidthSizeClass.Medium,
