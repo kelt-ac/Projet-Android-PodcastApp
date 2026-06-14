@@ -19,6 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
@@ -29,13 +30,15 @@ import com.podcastapp.android.core.TextSecondary
 import com.podcastapp.android.domain.model.Podcast
 import com.podcastapp.android.viewmodel.HomeIntent
 import com.podcastapp.android.viewmodel.HomeViewModel
+import com.podcastapp.android.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     onLogout: () -> Unit = {},
     onPodcastClick: (Podcast) -> Unit = {},
-    onSubscriptionsClick: () -> Unit = {}
+    onSubscriptionsClick: () -> Unit = {},
+    onDownloadsClick: () -> Unit = {}
 ) {
     val viewModel: HomeViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
@@ -52,7 +55,7 @@ fun HomeScreen(
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            text       = "PodcastApp",
+                            text       = stringResource(R.string.app_name),
                             fontSize   = 20.sp,
                             fontWeight = FontWeight.Bold,
                             color      = PrimaryDark
@@ -64,7 +67,7 @@ fun HomeScreen(
                         Text("⭐", fontSize = 18.sp)
                     }
                     TextButton(onClick = onLogout) {
-                        Text("Déconnexion", color = PrimaryMedium, fontSize = 12.sp)
+                        Text(stringResource(R.string.logout), color = PrimaryMedium, fontSize = 12.sp)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -125,7 +128,7 @@ fun HomeScreen(
                                 onClick = { viewModel.handleIntent(HomeIntent.LoadPodcasts) },
                                 colors  = ButtonDefaults.buttonColors(containerColor = PrimaryDark)
                             ) {
-                                Text("Réessayer", color = Color.White)
+                                Text(stringResource(R.string.retry), color = Color.White)
                             }
                         }
                     }
@@ -145,7 +148,7 @@ fun HomeScreen(
                         contentPadding = PaddingValues(bottom = 16.dp)
                     ) {
                         item {
-                            SectionTitle("🔥 Tendances")
+                            SectionTitle(stringResource(R.string.trending))
                             LazyRow(
                                 contentPadding = PaddingValues(horizontal = 16.dp),
                                 horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -161,7 +164,7 @@ fun HomeScreen(
                         }
 
                         item {
-                            SectionTitle("🎙️ Tous les podcasts")
+                            SectionTitle(stringResource(R.string.all_podcasts))
                         }
 
                         items(state.podcasts) { podcast ->
@@ -188,7 +191,7 @@ fun SearchBar(
     OutlinedTextField(
         value         = query,
         onValueChange = onSearch,
-        placeholder   = { Text("Rechercher un podcast...", fontSize = 13.sp) },
+        placeholder   = { Text(stringResource(R.string.search_hint), fontSize = 13.sp) },
         modifier      = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
@@ -332,7 +335,7 @@ fun SearchResults(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text     = "Aucun résultat trouvé",
+                text     = stringResource(R.string.no_results),
                 color    = TextSecondary,
                 fontSize = 14.sp
             )
