@@ -28,7 +28,8 @@ import com.podcastapp.android.viewmodel.DownloadViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DownloadsScreen(
-    onBack: () -> Unit = {}
+    onBack: () -> Unit = {},
+    onPlayEpisode: (String) -> Unit = {}
 ) {
     val viewModel: DownloadViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
@@ -109,6 +110,7 @@ fun DownloadsScreen(
                     ) { episode ->
                         DownloadItem(
                             episode  = episode,
+                            onPlay   = { url -> onPlayEpisode(url) },
                             onDelete = {
                                 viewModel.handleIntent(DownloadIntent.Delete(episode.id))
                             }
@@ -123,8 +125,22 @@ fun DownloadsScreen(
 @Composable
 fun DownloadItem(
     episode: EpisodeEntity,
-    onDelete: () -> Unit = {}
+    onDelete: () -> Unit = {},
+    onPlay: (String) -> Unit = {}
 ) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+
+    // Vérifier si le fichier local existe
+    val localFile = remember(episode.id) {
+        java.io.File(
+            context.getExternalFilesDir(
+                android.os.Environment.DIRECTORY_PODCASTS
+            ),
+            "${episode.id}.mp3"
+        )
+    }
+    val isLocalFileExists = localFile.exists()
+
     Card(
         modifier  = Modifier
             .fillMaxWidth()
@@ -163,12 +179,25 @@ fun DownloadItem(
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
-                    text     = "⏱ ${episode.duration}",
+                    text     = if (isLocalFileExists) "⬇️ Disponible hors ligne"
+                    else "☁️ En ligne uniquement",
                     fontSize = 11.sp,
-                    color    = TextSecondary
+                    color    = if (isLocalFileExists) PrimaryDark else TextSecondary
                 )
             }
             Spacer(modifier = Modifier.width(8.dp))
+            IconButton(
+                onClick = {
+                    val playUrl = if (isLocalFileExists) {
+                        android.net.Uri.fromFile(localFile).toString()
+                    } else {
+                        episode.audioUrl
+                    }
+                    onPlay(playUrl)
+                }
+            ) {
+                Text("▶", fontSize = 18.sp, color = PrimaryDark)
+            }
             IconButton(onClick = onDelete) {
                 Text("🗑️", fontSize = 18.sp)
             }

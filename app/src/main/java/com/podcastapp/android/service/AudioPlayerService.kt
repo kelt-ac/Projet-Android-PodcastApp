@@ -11,6 +11,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSessionService
+import androidx.media3.common.Player
 import com.podcastapp.android.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -21,22 +22,71 @@ class AudioPlayerService : MediaSessionService() {
     private lateinit var player: ExoPlayer
 
     companion object {
-        const val CHANNEL_ID    = "podcast_playback_channel"
+        const val CHANNEL_ID      = "podcast_playback_channel"
         const val NOTIFICATION_ID = 1001
+
+        private var instance: AudioPlayerService? = null
+
+        fun getPlayer() = instance?.player
     }
 
     override fun onCreate() {
         super.onCreate()
+        instance = this
         createNotificationChannel()
         player = ExoPlayer.Builder(this).build()
         mediaSession = MediaSession.Builder(this, player).build()
-        startForeground(NOTIFICATION_ID, createNotification())
+
+        // ← Ajouter listener pour arrêter la notification
+        player.addListener(object : Player.Listener {
+            override fun onPlaybackStateChanged(playbackState: Int) {
+                when (playbackState) {
+                    Player.STATE_ENDED -> {
+                        stopForeground(STOP_FOREGROUND_REMOVE)
+                        stopSelf()
+                    }
+                    Player.STATE_READY -> {
+                        if (!player.playWhenReady) {
+                            stopForeground(STOP_FOREGROUND_REMOVE)
+                        }
+                    }
+                }
+            }
+
+            override fun onIsPlayingChanged(isPlaying: Boolean) {
+                if (!isPlaying) {
+                    stopForeground(STOP_FOREGROUND_REMOVE)
+                } else {
+                    startForeground(NOTIFICATION_ID, createNotification("🎙️ Lecture en cours"))
+                }
+            }
+        })
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
+
+        when (intent?.action) {
+            "ACTION_PAUSE" -> {
+                if (player.isPlaying) {
+                    player.pause()
+                } else {
+                    player.play()
+                }
+                return START_STICKY
+            }
+        }
+
+        startForeground(NOTIFICATION_ID, createNotification("Lecture en cours..."))
+
         intent?.getStringExtra("AUDIO_URL")?.let { url ->
-            playFromUrl(url)
+            if (url.isNotEmpty()) {
+                val mediaItem = MediaItem.fromUri(url)
+                player.setMediaItem(mediaItem)
+                player.prepare()
+                player.play()
+                startForeground(NOTIFICATION_ID, createNotification("🎙️ Lecture en cours"))
+            }
         }
         return START_STICKY
     }
@@ -46,6 +96,7 @@ class AudioPlayerService : MediaSessionService() {
     ): MediaSession? = mediaSession
 
     override fun onDestroy() {
+        instance = null
         mediaSession?.run {
             player.release()
             release()
@@ -61,18 +112,39 @@ class AudioPlayerService : MediaSessionService() {
         player.play()
     }
 
-    private fun createNotification(): Notification {
+    private fun createNotification(text: String = "Lecture en cours..."): Notification {
+        // ← PendingIntent vers MainActivity avec flag pour ouvrir le Player
+        val intent = Intent(this, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            putExtra("OPEN_PLAYER", true)  // ← flag pour ouvrir le player
+        }
         val pendingIntent = PendingIntent.getActivity(
-            this, 0,
-            Intent(this, MainActivity::class.java),
-            PendingIntent.FLAG_IMMUTABLE
+            this, 0, intent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
+
+        // ← Bouton Pause dans la notification
+        val pauseIntent = Intent(this, AudioPlayerService::class.java).apply {
+            action = "ACTION_PAUSE"
+        }
+        val pausePendingIntent = PendingIntent.getService(
+            this, 1, pauseIntent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle("PodcastApp")
-            .setContentText("Lecture en cours...")
+            .setContentText(text)
             .setSmallIcon(android.R.drawable.ic_media_play)
-            .setContentIntent(pendingIntent)
+            .setContentIntent(pendingIntent)  // ← ouvre le player au clic
+            .addAction(
+                android.R.drawable.ic_media_pause,
+                "Pause",
+                pausePendingIntent
+            )
             .setOngoing(true)
+            .setSilent(true)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .build()
     }
 

@@ -24,13 +24,13 @@ data class PlayerViewState(
 )
 
 sealed class PlayerIntent {
-    data class LoadPodcast(val podcast: Podcast, val context: Context) : PlayerIntent() // ← context ajouté
-    object PlayPause                             : PlayerIntent()
-    object SeekForward                           : PlayerIntent()
-    object SeekBackward                          : PlayerIntent()
-    data class SeekTo(val position: Long)        : PlayerIntent()
-    data class SetSpeed(val speed: Float)        : PlayerIntent()
-    object Stop                                  : PlayerIntent()
+    data class LoadPodcast(val podcast: Podcast, val context: Context) : PlayerIntent()
+    object PlayPause                         : PlayerIntent()
+    object SeekForward                       : PlayerIntent()
+    object SeekBackward                      : PlayerIntent()
+    data class SeekTo(val position: Long)    : PlayerIntent()
+    data class SetSpeed(val speed: Float)    : PlayerIntent()
+    object Stop                              : PlayerIntent()
 }
 
 @HiltViewModel
@@ -57,7 +57,7 @@ class PlayerViewModel @Inject constructor() : ViewModel() {
             isLoading       = true,
             isPlaying       = false,
             currentPosition = 0L,
-            duration        = 180_000L
+            duration        = 0L
         )
 
         val serviceIntent = Intent(context, AudioPlayerService::class.java).apply {
@@ -66,16 +66,27 @@ class PlayerViewModel @Inject constructor() : ViewModel() {
         context.startService(serviceIntent)
 
         viewModelScope.launch {
-            delay(1000)
+            delay(2000)
+            // Récupérer la durée depuis le service
+            val duration = AudioPlayerService.getPlayer()?.duration ?: 0L
             _state.value = _state.value.copy(
                 isLoading = false,
-                isPlaying = true
+                isPlaying = true,
+                duration  = if (duration > 0) duration else 3600_000L
             )
             startProgressUpdate()
         }
     }
 
     private fun togglePlayPause() {
+        val player = AudioPlayerService.getPlayer()
+        if (player != null) {
+            if (_state.value.isPlaying) {
+                player.pause()
+            } else {
+                player.play()
+            }
+        }
         _state.value = _state.value.copy(
             isPlaying = !_state.value.isPlaying
         )
@@ -83,26 +94,36 @@ class PlayerViewModel @Inject constructor() : ViewModel() {
     }
 
     private fun seekForward() {
+        val player = AudioPlayerService.getPlayer()
         val newPosition = (_state.value.currentPosition + 30_000L)
             .coerceAtMost(_state.value.duration)
+        player?.seekTo(newPosition)
         _state.value = _state.value.copy(currentPosition = newPosition)
     }
 
     private fun seekBackward() {
+        val player = AudioPlayerService.getPlayer()
         val newPosition = (_state.value.currentPosition - 15_000L)
             .coerceAtLeast(0L)
+        player?.seekTo(newPosition)
         _state.value = _state.value.copy(currentPosition = newPosition)
     }
 
     private fun seekTo(position: Long) {
+        val player = AudioPlayerService.getPlayer()
+        player?.seekTo(position)
         _state.value = _state.value.copy(currentPosition = position)
     }
 
     private fun setSpeed(speed: Float) {
+        val player = AudioPlayerService.getPlayer()
+        player?.setPlaybackSpeed(speed)
         _state.value = _state.value.copy(playbackSpeed = speed)
     }
 
     private fun stop() {
+        val player = AudioPlayerService.getPlayer()
+        player?.stop()
         _state.value = _state.value.copy(
             isPlaying       = false,
             currentPosition = 0L
@@ -113,15 +134,28 @@ class PlayerViewModel @Inject constructor() : ViewModel() {
         viewModelScope.launch {
             while (_state.value.isPlaying) {
                 delay(1000L)
-                val newPosition = _state.value.currentPosition + 1000L
-                if (newPosition >= _state.value.duration) {
-                    _state.value = _state.value.copy(
-                        isPlaying       = false,
-                        currentPosition = 0L
-                    )
+                val player = AudioPlayerService.getPlayer()
+                if (player != null) {
+                    val position = player.currentPosition
+                    val duration = player.duration
+
+                    if (duration > 0) {
+                        _state.value = _state.value.copy(
+                            currentPosition = position,
+                            duration        = duration
+                        )
+                        // Vérifier si l'épisode est terminé
+                        if (position >= duration) {
+                            _state.value = _state.value.copy(
+                                isPlaying       = false,
+                                currentPosition = 0L
+                            )
+                            break
+                        }
+                    }
+                } else {
                     break
                 }
-                _state.value = _state.value.copy(currentPosition = newPosition)
             }
         }
     }
