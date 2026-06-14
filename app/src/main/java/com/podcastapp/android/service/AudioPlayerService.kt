@@ -21,7 +21,7 @@ class AudioPlayerService : MediaSessionService() {
     private lateinit var player: ExoPlayer
 
     companion object {
-        const val CHANNEL_ID      = "podcast_playback_channel"
+        const val CHANNEL_ID    = "podcast_playback_channel"
         const val NOTIFICATION_ID = 1001
     }
 
@@ -30,24 +30,14 @@ class AudioPlayerService : MediaSessionService() {
         createNotificationChannel()
         player = ExoPlayer.Builder(this).build()
         mediaSession = MediaSession.Builder(this, player).build()
+        startForeground(NOTIFICATION_ID, createNotification())
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
-
-        // Démarrer immédiatement en foreground
-        startForeground(NOTIFICATION_ID, createNotification("Lecture en cours..."))
-
         intent?.getStringExtra("AUDIO_URL")?.let { url ->
-            if (url.isNotEmpty()) {
-                val mediaItem = MediaItem.fromUri(url)
-                player.setMediaItem(mediaItem)
-                player.prepare()
-                player.play()
-                startForeground(NOTIFICATION_ID, createNotification("🎙️ Lecture en cours"))
-            }
+            playFromUrl(url)
         }
-
         return START_STICKY
     }
 
@@ -64,20 +54,25 @@ class AudioPlayerService : MediaSessionService() {
         super.onDestroy()
     }
 
-    private fun createNotification(text: String): Notification {
+    private fun playFromUrl(url: String) {
+        val mediaItem = MediaItem.fromUri(url)
+        player.setMediaItem(mediaItem)
+        player.prepare()
+        player.play()
+    }
+
+    private fun createNotification(): Notification {
         val pendingIntent = PendingIntent.getActivity(
             this, 0,
             Intent(this, MainActivity::class.java),
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+            PendingIntent.FLAG_IMMUTABLE
         )
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle("PodcastApp")
-            .setContentText(text)
+            .setContentText("Lecture en cours...")
             .setSmallIcon(android.R.drawable.ic_media_play)
             .setContentIntent(pendingIntent)
             .setOngoing(true)
-            .setSilent(true)
-            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .build()
     }
 
@@ -89,7 +84,6 @@ class AudioPlayerService : MediaSessionService() {
                 NotificationManager.IMPORTANCE_LOW
             ).apply {
                 description = "Canal pour la lecture audio en arrière-plan"
-                setShowBadge(false)
             }
             val manager = getSystemService(NotificationManager::class.java)
             manager.createNotificationChannel(channel)

@@ -87,9 +87,9 @@ fun SubscriptionsScreen(
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text      = "Abonnez-vous à des podcasts\npour les retrouver ici",
-                            fontSize  = 14.sp,
-                            color     = TextSecondary,
+                            text     = "Abonnez-vous à des podcasts\npour les retrouver ici",
+                            fontSize = 14.sp,
+                            color    = TextSecondary,
                             textAlign = androidx.compose.ui.text.style.TextAlign.Center
                         )
                         Spacer(modifier = Modifier.height(24.dp))
@@ -113,7 +113,7 @@ fun SubscriptionsScreen(
                         .fillMaxSize()
                         .padding(padding)
                         .background(Color(0xFFF0EEF8)),
-                    contentPadding        = PaddingValues(12.dp),
+                    contentPadding = PaddingValues(12.dp),
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     verticalArrangement   = Arrangement.spacedBy(12.dp)
                 ) {
@@ -135,7 +135,7 @@ fun SubscriptionCard(
     onClick: () -> Unit
 ) {
     Card(
-        modifier  = Modifier
+        modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() },
         shape     = RoundedCornerShape(12.dp),
@@ -143,7 +143,7 @@ fun SubscriptionCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
-            modifier            = Modifier.padding(8.dp),
+            modifier = Modifier.padding(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             AsyncImage(

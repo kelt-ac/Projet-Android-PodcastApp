@@ -60,7 +60,7 @@ fun HomeScreen(
                     }
                 },
                 actions = {
-                    TextButton(onClick = onSubscriptionsClick) {  // ← vérifier
+                    TextButton(onClick = onSubscriptionsClick) {
                         Text("⭐", fontSize = 18.sp)
                     }
                     TextButton(onClick = onLogout) {

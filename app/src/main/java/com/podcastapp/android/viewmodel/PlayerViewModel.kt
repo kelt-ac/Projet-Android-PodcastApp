@@ -24,13 +24,13 @@ data class PlayerViewState(
 )
 
 sealed class PlayerIntent {
-    data class LoadPodcast(val podcast: Podcast, val context: Context) : PlayerIntent()
-    object PlayPause                         : PlayerIntent()
-    object SeekForward                       : PlayerIntent()
-    object SeekBackward                      : PlayerIntent()
-    data class SeekTo(val position: Long)    : PlayerIntent()
-    data class SetSpeed(val speed: Float)    : PlayerIntent()
-    object Stop                              : PlayerIntent()
+    data class LoadPodcast(val podcast: Podcast, val context: Context) : PlayerIntent() // ← context ajouté
+    object PlayPause                             : PlayerIntent()
+    object SeekForward                           : PlayerIntent()
+    object SeekBackward                          : PlayerIntent()
+    data class SeekTo(val position: Long)        : PlayerIntent()
+    data class SetSpeed(val speed: Float)        : PlayerIntent()
+    object Stop                                  : PlayerIntent()
 }
 
 @HiltViewModel
