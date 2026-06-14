@@ -18,6 +18,7 @@ import com.podcastapp.android.ui.home.AdaptiveHomeScreen
 import com.podcastapp.android.ui.player.PlayerScreen
 import com.podcastapp.android.viewmodel.AuthViewModel
 import com.podcastapp.android.ui.subscriptions.SubscriptionsScreen
+import com.podcastapp.android.ui.downloads.DownloadsScreen
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -36,6 +37,7 @@ class MainActivity : ComponentActivity() {
                 var selectedPodcast by remember { mutableStateOf<Podcast?>(null) }
                 var selectedEpisode by remember { mutableStateOf<Podcast?>(null) }
                 var showSubscriptions by remember { mutableStateOf(false) }
+                var showDownloads by remember { mutableStateOf(false) }
 
 
                 when {
@@ -67,11 +69,16 @@ class MainActivity : ComponentActivity() {
                         onPodcastClick = { podcast -> selectedPodcast = podcast }
                     )
 
+                    showDownloads -> DownloadsScreen(
+                        onBack = { showDownloads = false }
+                    )
+
                     else -> AdaptiveHomeScreen(
                         windowSizeClass = windowSizeClass,
                         onLogout        = { viewModel.logout() },
                         onPodcastClick  = { podcast -> selectedPodcast = podcast },
-                        onSubscriptionsClick = { showSubscriptions = true }
+                        onSubscriptionsClick = { showSubscriptions = true },
+                        onDownloadsClick     = { showDownloads = true }
                     )
                 }
             }

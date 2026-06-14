@@ -10,14 +10,16 @@ fun AdaptiveHomeScreen(
     windowSizeClass: WindowSizeClass,
     onLogout: () -> Unit = {},
     onPodcastClick: (Podcast) -> Unit = {},
-    onSubscriptionsClick: () -> Unit = {}
+    onSubscriptionsClick: () -> Unit = {},
+    onDownloadsClick: () -> Unit = {}
 ) {
     when (windowSizeClass.widthSizeClass) {
         WindowWidthSizeClass.Compact -> {
             HomeScreen(
                 onLogout       = onLogout,
                 onPodcastClick = onPodcastClick,
-                onSubscriptionsClick = onSubscriptionsClick
+                onSubscriptionsClick = onSubscriptionsClick,
+                onDownloadsClick     = onDownloadsClick
             )
         }
         WindowWidthSizeClass.Medium,

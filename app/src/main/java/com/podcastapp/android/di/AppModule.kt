@@ -7,7 +7,10 @@ import com.podcastapp.android.data.remote.PodcastApiService
 import com.podcastapp.android.data.repository.PodcastRepository
 import com.podcastapp.android.data.local.PodcastDatabase
 import com.podcastapp.android.data.local.dao.PodcastDao
+import com.podcastapp.android.data.local.dao.EpisodeDao
 import com.podcastapp.android.data.repository.SubscriptionRepository
+import com.podcastapp.android.data.repository.DownloadRepository
+
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -79,7 +82,7 @@ object AppModule {
         context,
         PodcastDatabase::class.java,
         "podcast_database"
-    ).build()
+    ).fallbackToDestructiveMigration().build()
 
     @Provides
     @Singleton
@@ -91,4 +94,15 @@ object AppModule {
     fun provideSubscriptionRepository(
         dao: PodcastDao
     ): SubscriptionRepository = SubscriptionRepository(dao)
+
+    @Provides
+    @Singleton
+    fun provideEpisodeDao(database: PodcastDatabase): EpisodeDao =
+        database.episodeDao()
+
+    @Provides
+    @Singleton
+    fun provideDownloadRepository(
+        dao: EpisodeDao
+    ): DownloadRepository = DownloadRepository(dao)
 }

@@ -24,6 +24,8 @@ import com.podcastapp.android.core.TextSecondary
 import com.podcastapp.android.domain.model.Podcast
 import com.podcastapp.android.viewmodel.SubscriptionIntent
 import com.podcastapp.android.viewmodel.SubscriptionViewModel
+import com.podcastapp.android.viewmodel.DownloadIntent
+import com.podcastapp.android.viewmodel.DownloadViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,6 +37,7 @@ fun PodcastDetailScreen(
 ) {
     val subscriptionViewModel: SubscriptionViewModel = hiltViewModel()
     val isSubscribed by subscriptionViewModel.isSubscribed.collectAsState()
+    val downloadViewModel: DownloadViewModel = hiltViewModel()
 
     LaunchedEffect(podcast.id) {
         subscriptionViewModel.handleIntent(
@@ -226,7 +229,12 @@ fun PodcastDetailScreen(
                     number   = index + 1,
                     title    = "Épisode ${index + 1} — ${podcast.title}",
                     duration = "${20 + index * 3} min",
-                    onPlay   = onPlayEpisode
+                    onPlay   = onPlayEpisode,
+                    onDownload = {
+                        downloadViewModel.handleIntent(
+                            DownloadIntent.Download(podcast, index + 1)
+                        )
+                    }
                 )
             }
         }
@@ -257,7 +265,8 @@ fun EpisodeItem(
     number: Int,
     title: String,
     duration: String,
-    onPlay: () -> Unit = {}
+    onPlay: () -> Unit = {},
+    onDownload: () -> Unit = {}
 ) {
     Row(
         modifier = Modifier
@@ -290,6 +299,9 @@ fun EpisodeItem(
         }
         IconButton(onClick = onPlay) {
             Text("▶", fontSize = 18.sp, color = PrimaryDark)
+        }
+        IconButton(onClick = onDownload) {
+            Text("📥", fontSize = 16.sp)
         }
         HorizontalDivider(color = Color(0xFFE0E0F0))
     }

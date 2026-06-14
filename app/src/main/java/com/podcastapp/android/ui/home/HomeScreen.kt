@@ -35,7 +35,8 @@ import com.podcastapp.android.viewmodel.HomeViewModel
 fun HomeScreen(
     onLogout: () -> Unit = {},
     onPodcastClick: (Podcast) -> Unit = {},
-    onSubscriptionsClick: () -> Unit = {}
+    onSubscriptionsClick: () -> Unit = {},
+    onDownloadsClick: () -> Unit = {}
 ) {
     val viewModel: HomeViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
@@ -62,6 +63,9 @@ fun HomeScreen(
                 actions = {
                     TextButton(onClick = onSubscriptionsClick) {
                         Text("⭐", fontSize = 18.sp)
+                    }
+                    TextButton(onClick = onDownloadsClick) {
+                        Text("📥", fontSize = 18.sp)
                     }
                     TextButton(onClick = onLogout) {
                         Text("Déconnexion", color = PrimaryMedium, fontSize = 12.sp)
