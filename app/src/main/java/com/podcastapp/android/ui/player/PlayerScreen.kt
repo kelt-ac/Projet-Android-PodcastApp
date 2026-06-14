@@ -33,9 +33,10 @@ fun PlayerScreen(
 ) {
     val viewModel: PlayerViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
+    val context = androidx.compose.ui.platform.LocalContext.current
 
     LaunchedEffect(podcast) {
-        viewModel.handleIntent(PlayerIntent.LoadPodcast(podcast))
+        viewModel.handleIntent(PlayerIntent.LoadPodcast(podcast, context))
     }
 
     Scaffold(
