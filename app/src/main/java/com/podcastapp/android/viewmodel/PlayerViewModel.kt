@@ -116,6 +116,8 @@ class PlayerViewModel @Inject constructor() : ViewModel() {
     }
 
     private fun setSpeed(speed: Float) {
+        val player = AudioPlayerService.getPlayer()
+        player?.setPlaybackSpeed(speed)
         _state.value = _state.value.copy(playbackSpeed = speed)
     }
 
