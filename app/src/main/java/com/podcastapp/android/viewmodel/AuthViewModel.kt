@@ -29,6 +29,12 @@ class AuthViewModel @Inject constructor(
     private val _state = MutableStateFlow(AuthViewState())
     val state: StateFlow<AuthViewState> = _state
 
+    init {
+        if (auth.currentUser != null) {
+            _state.value = _state.value.copy(isLoggedIn = true)
+        }
+    }
+
     fun handleIntent(intent: AuthIntent) {
         when (intent) {
             is AuthIntent.EmailChanged ->

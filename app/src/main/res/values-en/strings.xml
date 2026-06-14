@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PodcastApp</string>
+
+    <!-- Auth -->
+    <string name="login">Login</string>
+    <string name="register">Register</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="login_button">Sign in</string>
+    <string name="register_button">Sign up</string>
+    <string name="google_login">Continue with Google</string>
+    <string name="facebook_login">Continue with Facebook</string>
+    <string name="no_account">No account?</string>
+    <string name="join_app">Join PodcastApp</string>
+    <string name="forgot_password">Forgot password?</string>
+    <string name="logout">Logout</string>
+
+    <!-- Home -->
+    <string name="trending">🔥 Trending</string>
+    <string name="all_podcasts">🎙️ All podcasts</string>
+    <string name="search_hint">Search a podcast...</string>
+    <string name="no_results">No results found</string>
+    <string name="retry">Retry</string>
+
+    <!-- Detail -->
+    <string name="subscribe">Subscribe</string>
+    <string name="subscribed">✓ Subscribed</string>
+    <string name="about">About</string>
+    <string name="episodes">🎙️ Episodes</string>
+    <string name="back">← Back</string>
+    <string name="episodes_count">Episodes</string>
+    <string name="genre">Genre</string>
+    <string name="author">Author</string>
+
+    <!-- Player -->
+    <string name="now_playing">Now playing</string>
+    <string name="playing">Playing...</string>
+
+    <!-- Subscriptions -->
+    <string name="my_subscriptions">⭐ My Subscriptions</string>
+    <string name="no_subscriptions">No subscriptions</string>
+    <string name="no_subscriptions_desc">Subscribe to podcasts\nto find them here</string>
+    <string name="discover">Discover podcasts</string>
+
+    <!-- Downloads -->
+    <string name="downloads">📥 Downloads</string>
+    <string name="no_downloads">No downloads</string>
+    <string name="no_downloads_desc">Download episodes\nto listen offline</string>
+
+    <!-- Errors -->
+    <string name="error_empty_fields">Please fill in all fields</string>
+    <string name="error_password_length">Password must be at least 8 characters</string>
+    <string name="error_wrong_credentials">Wrong email or password</string>
+    <string name="error_google_cancelled">Google sign in cancelled</string>
+</resources>

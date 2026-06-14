@@ -15,6 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.podcastapp.android.core.PrimaryDark
@@ -24,6 +25,9 @@ import com.podcastapp.android.core.TextSecondary
 import com.podcastapp.android.domain.model.Podcast
 import com.podcastapp.android.viewmodel.SubscriptionIntent
 import com.podcastapp.android.viewmodel.SubscriptionViewModel
+import com.podcastapp.android.viewmodel.DownloadIntent
+import com.podcastapp.android.viewmodel.DownloadViewModel
+import com.podcastapp.android.viewmodel.DetailViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -31,15 +35,21 @@ fun PodcastDetailScreen(
     podcast: Podcast,
     onBack: () -> Unit = {},
     onSubscribe: (Podcast) -> Unit = {},
-    onPlayEpisode: () -> Unit = {}
+    onPlayEpisode: (String) -> Unit = {}
 ) {
     val subscriptionViewModel: SubscriptionViewModel = hiltViewModel()
     val isSubscribed by subscriptionViewModel.isSubscribed.collectAsState()
+    val downloadViewModel: DownloadViewModel = hiltViewModel()
+    val detailViewModel: DetailViewModel = hiltViewModel()
+    val detailState by detailViewModel.state.collectAsState()
+    val context = androidx.compose.ui.platform.LocalContext.current
+
 
     LaunchedEffect(podcast.id) {
         subscriptionViewModel.handleIntent(
             SubscriptionIntent.CheckSubscription(podcast.id)
         )
+        detailViewModel.loadEpisodes(podcast.id)
     }
 
     Scaffold(
@@ -221,13 +231,61 @@ fun PodcastDetailScreen(
             }
 
             // ── Liste des épisodes ─────────────────────
-            items(10) { index ->
-                EpisodeItem(
-                    number   = index + 1,
-                    title    = "Épisode ${index + 1} — ${podcast.title}",
-                    duration = "${20 + index * 3} min",
-                    onPlay   = onPlayEpisode
-                )
+            item {
+                Spacer(modifier = Modifier.height(12.dp))
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color.White)
+                        .padding(16.dp)
+                ) {
+                    Text(
+                        text       = "🎙️ Épisodes",
+                        fontSize   = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color      = PrimaryDark
+                    )
+                }
+            }
+
+            if (detailState.isLoading) {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(color = PrimaryDark)
+                    }
+                }
+            } else if (detailState.episodes.isEmpty()) {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text     = "Aucun épisode disponible",
+                            color    = TextSecondary,
+                            fontSize = 14.sp
+                        )
+                    }
+                }
+            } else {
+                itemsIndexed(detailState.episodes) { index, episode ->
+                    EpisodeItem(
+                        number     = index + 1,
+                        title      = episode.title,
+                        duration   = "${episode.duration / 60} min",
+                        onPlay     = { onPlayEpisode(episode.audioUrl) },
+                        onDownload = {
+                            detailViewModel.downloadEpisode(context, podcast, episode)
+                        }
+                    )
+                }
             }
         }
     }
@@ -257,7 +315,8 @@ fun EpisodeItem(
     number: Int,
     title: String,
     duration: String,
-    onPlay: () -> Unit = {}
+    onPlay: () -> Unit = {},
+    onDownload: () -> Unit = {}
 ) {
     Row(
         modifier = Modifier
@@ -290,6 +349,9 @@ fun EpisodeItem(
         }
         IconButton(onClick = onPlay) {
             Text("▶", fontSize = 18.sp, color = PrimaryDark)
+        }
+        IconButton(onClick = onDownload) {
+            Text("📥", fontSize = 16.sp)
         }
         HorizontalDivider(color = Color(0xFFE0E0F0))
     }
