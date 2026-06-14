@@ -15,33 +15,44 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.podcastapp.android.core.PrimaryDark
 import com.podcastapp.android.core.PrimaryLight
 import com.podcastapp.android.core.PrimaryMedium
 import com.podcastapp.android.core.TextSecondary
 import com.podcastapp.android.domain.model.Podcast
+import com.podcastapp.android.viewmodel.SubscriptionIntent
+import com.podcastapp.android.viewmodel.SubscriptionViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PodcastDetailScreen(
     podcast: Podcast,
     onBack: () -> Unit = {},
-    onSubscribe: (Podcast) -> Unit = {}
+    onSubscribe: (Podcast) -> Unit = {},
+    onPlayEpisode: () -> Unit = {}
 ) {
-    var isSubscribed by remember { mutableStateOf(false) }
+    val subscriptionViewModel: SubscriptionViewModel = hiltViewModel()
+    val isSubscribed by subscriptionViewModel.isSubscribed.collectAsState()
+
+    LaunchedEffect(podcast.id) {
+        subscriptionViewModel.handleIntent(
+            SubscriptionIntent.CheckSubscription(podcast.id)
+        )
+    }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Text(
-                        text     = podcast.title,
-                        fontSize = 16.sp,
+                        text       = podcast.title,
+                        fontSize   = 16.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color    = PrimaryDark,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        color      = PrimaryDark,
+                        maxLines   = 1,
+                        overflow   = TextOverflow.Ellipsis
                     )
                 },
                 navigationIcon = {
@@ -89,9 +100,9 @@ fun PodcastDetailScreen(
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text     = podcast.author,
-                        fontSize = 14.sp,
-                        color    = TextSecondary
+                        text      = podcast.author,
+                        fontSize  = 14.sp,
+                        color     = TextSecondary
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
@@ -108,7 +119,15 @@ fun PodcastDetailScreen(
                     // ── Bouton S'abonner ───────────────
                     Button(
                         onClick = {
-                            isSubscribed = !isSubscribed
+                            if (isSubscribed) {
+                                subscriptionViewModel.handleIntent(
+                                    SubscriptionIntent.Unsubscribe(podcast)
+                                )
+                            } else {
+                                subscriptionViewModel.handleIntent(
+                                    SubscriptionIntent.Subscribe(podcast)
+                                )
+                            }
                             onSubscribe(podcast)
                         },
                         modifier = Modifier
@@ -120,8 +139,8 @@ fun PodcastDetailScreen(
                         )
                     ) {
                         Text(
-                            text  = if (isSubscribed) "✓ Abonné" else "S'abonner",
-                            color = if (isSubscribed) PrimaryDark else Color.White,
+                            text       = if (isSubscribed) "✓ Abonné" else "S'abonner",
+                            color      = if (isSubscribed) PrimaryDark else Color.White,
                             fontWeight = FontWeight.SemiBold
                         )
                     }
@@ -173,11 +192,11 @@ fun PodcastDetailScreen(
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text     = "Découvrez ${podcast.title} par ${podcast.author}. " +
+                        text = "Découvrez ${podcast.title} par ${podcast.author}. " +
                                 "Ce podcast propose ${podcast.episodeCount} épisodes " +
                                 "dans la catégorie ${podcast.genre}.",
-                        fontSize = 14.sp,
-                        color    = TextSecondary,
+                        fontSize   = 14.sp,
+                        color      = TextSecondary,
                         lineHeight = 22.sp
                     )
                 }
@@ -201,12 +220,13 @@ fun PodcastDetailScreen(
                 }
             }
 
-            // Liste des épisodes fictifs
+            // ── Liste des épisodes ─────────────────────
             items(10) { index ->
                 EpisodeItem(
-                    number    = index + 1,
-                    title     = "Épisode ${index + 1} — ${podcast.title}",
-                    duration  = "${20 + index * 3} min"
+                    number   = index + 1,
+                    title    = "Épisode ${index + 1} — ${podcast.title}",
+                    duration = "${20 + index * 3} min",
+                    onPlay   = onPlayEpisode
                 )
             }
         }
@@ -233,7 +253,12 @@ fun StatItem(label: String, value: String) {
 }
 
 @Composable
-fun EpisodeItem(number: Int, title: String, duration: String) {
+fun EpisodeItem(
+    number: Int,
+    title: String,
+    duration: String,
+    onPlay: () -> Unit = {}
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -250,12 +275,12 @@ fun EpisodeItem(number: Int, title: String, duration: String) {
         )
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text     = title,
-                fontSize = 13.sp,
+                text       = title,
+                fontSize   = 13.sp,
                 fontWeight = FontWeight.SemiBold,
-                color    = PrimaryDark,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
+                color      = PrimaryDark,
+                maxLines   = 2,
+                overflow   = TextOverflow.Ellipsis
             )
             Text(
                 text     = duration,
@@ -263,7 +288,7 @@ fun EpisodeItem(number: Int, title: String, duration: String) {
                 color    = TextSecondary
             )
         }
-        IconButton(onClick = { }) {
+        IconButton(onClick = onPlay) {
             Text("▶", fontSize = 18.sp, color = PrimaryDark)
         }
         HorizontalDivider(color = Color(0xFFE0E0F0))

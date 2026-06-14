@@ -111,4 +111,10 @@ dependencies {
     // ── Adaptive Layout ───────────────────────────────────────
     implementation(libs.androidx.window)
     implementation(libs.androidx.material3.window.size)
+
+    // ── Media3 / ExoPlayer ────────────────────────────────────
+    implementation(libs.media3.exoplayer)
+    implementation(libs.media3.ui)
+    implementation(libs.media3.session)
+    implementation(libs.media3.common)
 }
