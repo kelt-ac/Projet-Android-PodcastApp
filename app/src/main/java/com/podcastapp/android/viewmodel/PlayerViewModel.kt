@@ -1,8 +1,11 @@
 package com.podcastapp.android.viewmodel
 
+import android.content.Context
+import android.content.Intent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.podcastapp.android.domain.model.Podcast
+import com.podcastapp.android.service.AudioPlayerService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,7 +24,7 @@ data class PlayerViewState(
 )
 
 sealed class PlayerIntent {
-    data class LoadPodcast(val podcast: Podcast) : PlayerIntent()
+    data class LoadPodcast(val podcast: Podcast, val context: Context) : PlayerIntent() // ← context ajouté
     object PlayPause                             : PlayerIntent()
     object SeekForward                           : PlayerIntent()
     object SeekBackward                          : PlayerIntent()
@@ -38,7 +41,7 @@ class PlayerViewModel @Inject constructor() : ViewModel() {
 
     fun handleIntent(intent: PlayerIntent) {
         when (intent) {
-            is PlayerIntent.LoadPodcast  -> loadPodcast(intent.podcast)
+            is PlayerIntent.LoadPodcast  -> loadPodcast(intent.podcast, intent.context)
             is PlayerIntent.PlayPause    -> togglePlayPause()
             is PlayerIntent.SeekForward  -> seekForward()
             is PlayerIntent.SeekBackward -> seekBackward()
@@ -48,14 +51,20 @@ class PlayerViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    private fun loadPodcast(podcast: Podcast) {
+    private fun loadPodcast(podcast: Podcast, context: Context) {
         _state.value = _state.value.copy(
-            podcast    = podcast,
-            isLoading  = true,
-            isPlaying  = false,
+            podcast         = podcast,
+            isLoading       = true,
+            isPlaying       = false,
             currentPosition = 0L,
-            duration   = 180_000L // 3 minutes par défaut
+            duration        = 180_000L
         )
+
+        val serviceIntent = Intent(context, AudioPlayerService::class.java).apply {
+            putExtra("AUDIO_URL", podcast.feedUrl)
+        }
+        context.startService(serviceIntent)
+
         viewModelScope.launch {
             delay(1000)
             _state.value = _state.value.copy(
@@ -70,9 +79,7 @@ class PlayerViewModel @Inject constructor() : ViewModel() {
         _state.value = _state.value.copy(
             isPlaying = !_state.value.isPlaying
         )
-        if (_state.value.isPlaying) {
-            startProgressUpdate()
-        }
+        if (_state.value.isPlaying) startProgressUpdate()
     }
 
     private fun seekForward() {
