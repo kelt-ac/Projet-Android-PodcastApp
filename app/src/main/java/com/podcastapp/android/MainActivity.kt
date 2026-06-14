@@ -38,6 +38,7 @@ class MainActivity : ComponentActivity() {
                 var selectedEpisode by remember { mutableStateOf<Podcast?>(null) }
                 var showSubscriptions by remember { mutableStateOf(false) }
                 var showDownloads by remember { mutableStateOf(false) }
+                var showPlayerFullScreen by remember { mutableStateOf(false) }
 
 
                 when {
@@ -61,7 +62,9 @@ class MainActivity : ComponentActivity() {
                         podcast       = selectedPodcast!!,
                         onBack        = { selectedPodcast = null },
                         onSubscribe   = { },
-                        onPlayEpisode = { selectedEpisode = selectedPodcast }
+                        onPlayEpisode = { audioUrl ->
+                            selectedEpisode = selectedPodcast!!.copy(feedUrl = audioUrl)
+                        }
                     )
 
                     showSubscriptions -> SubscriptionsScreen(
@@ -70,7 +73,21 @@ class MainActivity : ComponentActivity() {
                     )
 
                     showDownloads -> DownloadsScreen(
-                        onBack = { showDownloads = false }
+                        onBack = { showDownloads = false },
+                        onPlayEpisode = { audioUrl ->
+                            selectedEpisode = Podcast(
+                                id           = 0L,
+                                title        = "Épisode téléchargé",
+                                author       = "",
+                                artworkUrl   = "",
+                                genre        = "",
+                                episodeCount = 0,
+                                feedUrl      = audioUrl,
+                                podcastUrl   = ""
+                            )
+                            showDownloads        = false
+                            showPlayerFullScreen = true
+                        }
                     )
 
                     else -> AdaptiveHomeScreen(
