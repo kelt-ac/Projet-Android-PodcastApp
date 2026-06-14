@@ -1,5 +1,8 @@
 package com.podcastapp.android
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -11,6 +14,7 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import com.podcastapp.android.core.PodcastAppTheme
@@ -25,11 +29,6 @@ import com.podcastapp.android.ui.subscriptions.SubscriptionsScreen
 import com.podcastapp.android.viewmodel.AuthViewModel
 import com.podcastapp.android.viewmodel.PlayerIntent
 import com.podcastapp.android.viewmodel.PlayerViewModel
-import android.Manifest
-import android.content.pm.PackageManager
-import android.os.Build
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -67,7 +66,9 @@ class MainActivity : ComponentActivity() {
                 var showSubscriptions    by remember { mutableStateOf(false) }
                 var showPlayerFullScreen by remember { mutableStateOf(false) }
 
-                val showMiniPlayer = playerState.podcast != null && !showPlayerFullScreen && authState.isLoggedIn
+                val showMiniPlayer = playerState.podcast != null &&
+                        !showPlayerFullScreen &&
+                        authState.isLoggedIn
 
                 Column(modifier = Modifier.fillMaxSize()) {
                     Box(modifier = Modifier.weight(1f)) {
