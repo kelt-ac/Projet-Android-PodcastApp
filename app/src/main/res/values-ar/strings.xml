@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PodcastApp</string>
+
+    <!-- Auth -->
+    <string name="login">تسجيل الدخول</string>
+    <string name="register">إنشاء حساب</string>
+    <string name="email">البريد الإلكتروني</string>
+    <string name="password">كلمة المرور</string>
+    <string name="login_button">دخول</string>
+    <string name="register_button">إنشاء حساب</string>
+    <string name="google_login">المتابعة مع Google</string>
+    <string name="facebook_login">المتابعة مع Facebook</string>
+    <string name="no_account">ليس لديك حساب؟</string>
+    <string name="join_app">انضم إلى PodcastApp</string>
+    <string name="forgot_password">نسيت كلمة المرور؟</string>
+    <string name="logout">تسجيل الخروج</string>
+
+    <!-- Home -->
+    <string name="trending">🔥 الرائج</string>
+    <string name="all_podcasts">🎙️ جميع البودكاست</string>
+    <string name="search_hint">ابحث عن بودكاست...</string>
+    <string name="no_results">لا توجد نتائج</string>
+    <string name="retry">إعادة المحاولة</string>
+
+    <!-- Detail -->
+    <string name="subscribe">اشتراك</string>
+    <string name="subscribed">✓ مشترك</string>
+    <string name="about">حول</string>
+    <string name="episodes">🎙️ الحلقات</string>
+    <string name="back">→ رجوع</string>
+    <string name="episodes_count">الحلقات</string>
+    <string name="genre">النوع</string>
+    <string name="author">المؤلف</string>
+
+    <!-- Player -->
+    <string name="now_playing">يتم التشغيل الآن</string>
+    <string name="playing">جاري التشغيل...</string>
+
+    <!-- Subscriptions -->
+    <string name="my_subscriptions">⭐ اشتراكاتي</string>
+    <string name="no_subscriptions">لا توجد اشتراكات</string>
+    <string name="no_subscriptions_desc">اشترك في البودكاست\nللعثور عليها هنا</string>
+    <string name="discover">اكتشف البودكاست</string>
+
+    <!-- Downloads -->
+    <string name="downloads">📥 التنزيلات</string>
+    <string name="no_downloads">لا توجد تنزيلات</string>
+    <string name="no_downloads_desc">قم بتنزيل الحلقات\nللاستماع دون إنترنت</string>
+
+    <!-- Errors -->
+    <string name="error_empty_fields">يرجى ملء جميع الحقول</string>
+    <string name="error_password_length">يجب أن تحتوي كلمة المرور على 8 أحرف على الأقل</string>
+    <string name="error_wrong_credentials">البريد الإلكتروني أو كلمة المرور غير صحيحة</string>
+    <string name="error_google_cancelled">تم إلغاء تسجيل الدخول بـ Google</string>
+</resources>
