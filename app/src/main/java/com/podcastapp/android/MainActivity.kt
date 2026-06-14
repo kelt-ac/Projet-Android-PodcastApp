@@ -17,6 +17,7 @@ import com.podcastapp.android.ui.detail.PodcastDetailScreen
 import com.podcastapp.android.ui.home.AdaptiveHomeScreen
 import com.podcastapp.android.ui.player.PlayerScreen
 import com.podcastapp.android.viewmodel.AuthViewModel
+import com.podcastapp.android.ui.subscriptions.SubscriptionsScreen
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -34,6 +35,8 @@ class MainActivity : ComponentActivity() {
 
                 var selectedPodcast by remember { mutableStateOf<Podcast?>(null) }
                 var selectedEpisode by remember { mutableStateOf<Podcast?>(null) }
+                var showSubscriptions by remember { mutableStateOf(false) }
+
 
                 when {
                     !state.isLoggedIn -> LoginScreen(
@@ -59,12 +62,16 @@ class MainActivity : ComponentActivity() {
                         onPlayEpisode = { selectedEpisode = selectedPodcast }
                     )
 
+                    showSubscriptions -> SubscriptionsScreen(
+                        onBack         = { showSubscriptions = false },
+                        onPodcastClick = { podcast -> selectedPodcast = podcast }
+                    )
+
                     else -> AdaptiveHomeScreen(
                         windowSizeClass = windowSizeClass,
                         onLogout        = { viewModel.logout() },
-                        onPodcastClick  = { podcast ->
-                            selectedPodcast = podcast
-                        }
+                        onPodcastClick  = { podcast -> selectedPodcast = podcast },
+                        onSubscriptionsClick = { showSubscriptions = true }
                     )
                 }
             }
