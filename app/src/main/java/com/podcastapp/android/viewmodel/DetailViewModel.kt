@@ -79,8 +79,7 @@ class DetailViewModel @Inject constructor(
                     )
                     .setAllowedOverMetered(true)
 
-                val dm = context.getSystemService(Context.DOWNLOAD_SERVICE)
-                        as DownloadManager
+                val dm = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
                 dm.enqueue(request)
 
                 downloadRepository.download(
