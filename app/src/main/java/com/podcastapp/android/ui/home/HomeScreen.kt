@@ -51,39 +51,43 @@ fun HomeScreen(
                         Text(
                             text       = "≡ ",
                             fontSize   = 20.sp,
-                            color      = PrimaryDark,
-                            fontWeight = FontWeight.Bold
+                            color      = MaterialTheme.colorScheme.onSurface,
+                            fontWeight = FontWeight.Bold,
+                            maxLines   = 1
                         )
                         Text(
                             text       = stringResource(R.string.app_name),
                             fontSize   = 20.sp,
                             fontWeight = FontWeight.Bold,
-                            color      = PrimaryDark
+                            color      = MaterialTheme.colorScheme.onSurface,
+                            maxLines   = 1,
+                            overflow   = TextOverflow.Ellipsis
                         )
                     }
                 },
                 actions = {
-                    TextButton(onClick = onSubscriptionsClick) {
+                    IconButton(onClick = onSubscriptionsClick) {
                         Text("⭐", fontSize = 18.sp)
                     }
-                    TextButton(onClick = onDownloadsClick) {
+                    IconButton(onClick = onDownloadsClick) {
                         Text("📥", fontSize = 18.sp)
                     }
-                    TextButton(onClick = onLogout) {
-                        Text(stringResource(R.string.logout), color = PrimaryMedium, fontSize = 12.sp)
+                    IconButton(onClick = onLogout) {
+                        Text("🚪", fontSize = 18.sp)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.White
+                    containerColor = MaterialTheme.colorScheme.surface
                 )
             )
-        }
+        },
+        containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .background(Color(0xFFF0EEF8))
+                .background(MaterialTheme.colorScheme.background)
         ) {
             // ── Barre de recherche ─────────────────────────
             SearchBar(
@@ -106,7 +110,7 @@ fun HomeScreen(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
-                        CircularProgressIndicator(color = PrimaryDark)
+                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                     }
                 }
 
@@ -129,9 +133,9 @@ fun HomeScreen(
                             Spacer(modifier = Modifier.height(16.dp))
                             Button(
                                 onClick = { viewModel.handleIntent(HomeIntent.LoadPodcasts) },
-                                colors  = ButtonDefaults.buttonColors(containerColor = PrimaryDark)
+                                colors  = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                             ) {
-                                Text(stringResource(R.string.retry), color = Color.White)
+                                Text(stringResource(R.string.retry), color = MaterialTheme.colorScheme.onPrimary)
                             }
                         }
                     }
@@ -209,9 +213,11 @@ fun SearchBar(
         },
         colors = OutlinedTextFieldDefaults.colors(
             focusedBorderColor   = PrimaryMedium,
-            unfocusedBorderColor = Color(0xFFE0E0F0),
-            focusedContainerColor   = Color.White,
-            unfocusedContainerColor = Color.White,
+            unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+            focusedContainerColor   = MaterialTheme.colorScheme.surface,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+            focusedTextColor   = MaterialTheme.colorScheme.onSurface,
+            unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
         )
     )
 }
@@ -224,7 +230,7 @@ fun SectionTitle(title: String) {
         text       = title,
         fontSize   = 16.sp,
         fontWeight = FontWeight.Bold,
-        color      = PrimaryDark,
+        color      = MaterialTheme.colorScheme.onBackground,
         modifier   = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
     )
 }
@@ -253,7 +259,7 @@ fun PodcastCardHorizontal(
             text     = podcast.title,
             fontSize = 12.sp,
             fontWeight = FontWeight.SemiBold,
-            color    = PrimaryDark,
+            color    = MaterialTheme.colorScheme.onBackground,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.fillMaxWidth()
@@ -280,7 +286,7 @@ fun PodcastCardVertical(
             .padding(horizontal = 16.dp, vertical = 6.dp)
             .clickable { onClick() },
         shape  = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
@@ -301,7 +307,7 @@ fun PodcastCardVertical(
                     text       = podcast.title,
                     fontSize   = 14.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color      = PrimaryDark,
+                    color      = MaterialTheme.colorScheme.onSurface,
                     maxLines   = 2,
                     overflow   = TextOverflow.Ellipsis
                 )
@@ -389,8 +395,8 @@ fun CategoryChips(
                 colors   = FilterChipDefaults.filterChipColors(
                     selectedContainerColor = PrimaryDark,
                     selectedLabelColor     = Color.White,
-                    containerColor         = Color.White,
-                    labelColor             = PrimaryDark
+                    containerColor         = MaterialTheme.colorScheme.surface,
+                    labelColor             = MaterialTheme.colorScheme.onSurface
                 ),
                 shape = RoundedCornerShape(20.dp)
             )
