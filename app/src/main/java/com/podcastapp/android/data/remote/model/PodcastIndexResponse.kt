@@ -29,12 +29,12 @@ data class PodcastIndexEpisodesResponse(
 )
 
 data class PodcastIndexEpisode(
-    @SerializedName("id")           val id:           Long,
-    @SerializedName("title")        val title:        String,
-    @SerializedName("description")  val description:  String,
-    @SerializedName("enclosureUrl") val audioUrl:     String,
-    @SerializedName("duration")     val duration:     Int,
-    @SerializedName("image")        val image:        String?,
-    @SerializedName("datePublished") val datePublished: Long,
-    @SerializedName("feedId")       val feedId:       Long
+    @SerializedName("id")            val id:            Long? = null,
+    @SerializedName("title")         val title:         String? = null,
+    @SerializedName("description")   val description:   String? = null,
+    @SerializedName("enclosureUrl")  val audioUrl:       String? = null,
+    @SerializedName("duration")      val duration:       Int? = null,
+    @SerializedName("image")         val image:          String? = null,
+    @SerializedName("datePublished") val datePublished:  Long? = null,
+    @SerializedName("feedId")        val feedId:         Long? = null
 )
