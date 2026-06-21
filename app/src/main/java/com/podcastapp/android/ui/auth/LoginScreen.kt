@@ -24,7 +24,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.podcastapp.android.core.BackgroundLight
-import com.podcastapp.android.core.FacebookBlue
 import com.podcastapp.android.core.PodcastAppTheme
 import com.podcastapp.android.core.PrimaryDark
 import com.podcastapp.android.core.PrimaryLight
@@ -55,7 +54,6 @@ sealed class AuthIntent {
     object Login                                   : AuthIntent()
     object Register                                : AuthIntent()
     object LoginWithGoogle                         : AuthIntent()
-    object LoginWithFacebook                       : AuthIntent()
     object OpenForgotPasswordDialog                : AuthIntent()
     object DismissForgotPasswordDialog             : AuthIntent()
     data class ResetEmailChanged(val email: String): AuthIntent()
@@ -203,25 +201,6 @@ fun LoginScreen(
                             fontSize = 14.sp
                         )
                     }
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    // Bouton Facebook
-                    Button(
-                        onClick  = { onIntent(AuthIntent.LoginWithFacebook) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(48.dp),
-                        shape  = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = FacebookBlue)
-                    ) {
-                        Text(text = "f  ", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                        Text(
-                            text  = "Continuer avec Facebook",
-                            color = Color.White,
-                            fontSize = 14.sp
-                        )
-                    }
                 }
             }
 
@@ -250,8 +229,6 @@ fun LoginScreen(
         }
 
         // ── Dialogue mot de passe oublié ────────────────────────
-        // Placé au niveau racine du Box (indépendant du flux du Column
-        // scrollable) car AlertDialog s'affiche dans sa propre fenêtre.
         if (state.showForgotPasswordDialog) {
             ForgotPasswordDialog(
                 email = state.resetEmail,
