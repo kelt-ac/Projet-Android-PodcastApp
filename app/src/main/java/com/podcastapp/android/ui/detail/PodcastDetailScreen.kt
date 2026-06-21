@@ -167,7 +167,7 @@ fun PodcastDetailScreen(
                         .padding(16.dp),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    StatItem(label = "Épisodes", value = "${podcast.episodeCount}")
+                    StatItem(label = "Épisodes", value = "${detailState.episodes.size}")
                     Divider(
                         modifier = Modifier
                             .height(40.dp)
@@ -203,29 +203,12 @@ fun PodcastDetailScreen(
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text = "Découvrez ${podcast.title} par ${podcast.author}. " +
-                                "Ce podcast propose ${podcast.episodeCount} épisodes " +
-                                "dans la catégorie ${podcast.genre}.",
+                                "Ce podcast propose ${detailState.episodes.size} épisode" +
+                                (if (detailState.episodes.size > 1) "s" else "") +
+                                " dans la catégorie ${podcast.genre}.",
                         fontSize   = 14.sp,
                         color      = TextSecondary,
                         lineHeight = 22.sp
-                    )
-                }
-            }
-
-            // ── Épisodes ───────────────────────────────
-            item {
-                Spacer(modifier = Modifier.height(12.dp))
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color.White)
-                        .padding(16.dp)
-                ) {
-                    Text(
-                        text       = "🎙️ Épisodes",
-                        fontSize   = 16.sp,
-                        fontWeight = FontWeight.Bold,
-                        color      = PrimaryDark
                     )
                 }
             }
@@ -276,11 +259,18 @@ fun PodcastDetailScreen(
                 }
             } else {
                 itemsIndexed(detailState.episodes) { index, episode ->
+                    val safeTitle = episode.title?.takeIf { it.isNotBlank() }
+                        ?: "Épisode sans titre"
+                    val safeDuration = (episode.duration ?: 0).let { seconds ->
+                        if (seconds > 0) "${seconds / 60} min" else "Durée inconnue"
+                    }
+                    val safeAudioUrl = episode.audioUrl ?: ""
+
                     EpisodeItem(
                         number     = index + 1,
-                        title      = episode.title,
-                        duration   = "${episode.duration / 60} min",
-                        onPlay     = { onPlayEpisode(episode.audioUrl) },
+                        title      = safeTitle,
+                        duration   = safeDuration,
+                        onPlay     = { onPlayEpisode(safeAudioUrl) },
                         onDownload = {
                             detailViewModel.downloadEpisode(context, podcast, episode)
                         }
@@ -318,40 +308,42 @@ fun EpisodeItem(
     onPlay: () -> Unit = {},
     onDownload: () -> Unit = {}
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color.White)
-            .padding(horizontal = 16.dp, vertical = 10.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text       = "$number",
-            fontSize   = 14.sp,
-            fontWeight = FontWeight.Bold,
-            color      = PrimaryMedium,
-            modifier   = Modifier.width(28.dp)
-        )
-        Column(modifier = Modifier.weight(1f)) {
+    Column {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.White)
+                .padding(horizontal = 16.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Text(
-                text       = title,
-                fontSize   = 13.sp,
-                fontWeight = FontWeight.SemiBold,
-                color      = PrimaryDark,
-                maxLines   = 2,
-                overflow   = TextOverflow.Ellipsis
+                text       = "$number",
+                fontSize   = 14.sp,
+                fontWeight = FontWeight.Bold,
+                color      = PrimaryMedium,
+                modifier   = Modifier.width(28.dp)
             )
-            Text(
-                text     = duration,
-                fontSize = 12.sp,
-                color    = TextSecondary
-            )
-        }
-        IconButton(onClick = onPlay) {
-            Text("▶", fontSize = 18.sp, color = PrimaryDark)
-        }
-        IconButton(onClick = onDownload) {
-            Text("📥", fontSize = 16.sp)
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text       = title,
+                    fontSize   = 13.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color      = PrimaryDark,
+                    maxLines   = 2,
+                    overflow   = TextOverflow.Ellipsis
+                )
+                Text(
+                    text     = duration,
+                    fontSize = 12.sp,
+                    color    = TextSecondary
+                )
+            }
+            IconButton(onClick = onPlay) {
+                Text("▶", fontSize = 18.sp, color = PrimaryDark)
+            }
+            IconButton(onClick = onDownload) {
+                Text("📥", fontSize = 16.sp)
+            }
         }
         HorizontalDivider(color = Color(0xFFE0E0F0))
     }

@@ -55,10 +55,19 @@ class DetailViewModel @Inject constructor(
         podcast: Podcast,
         episode: PodcastIndexEpisode
     ) {
+        val audioUrl = episode.audioUrl
+        if (audioUrl.isNullOrBlank() || episode.id == null) {
+            _state.value = _state.value.copy(
+                errorMessage = "Épisode invalide, téléchargement impossible"
+            )
+            return
+        }
+        val safeTitle = episode.title?.takeIf { it.isNotBlank() } ?: "Épisode sans titre"
+
         viewModelScope.launch {
             try {
-                val request = DownloadManager.Request(Uri.parse(episode.audioUrl))
-                    .setTitle(episode.title)
+                val request = DownloadManager.Request(Uri.parse(audioUrl))
+                    .setTitle(safeTitle)
                     .setDescription("Téléchargement PodcastApp")
                     .setNotificationVisibility(
                         DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED
@@ -70,8 +79,7 @@ class DetailViewModel @Inject constructor(
                     )
                     .setAllowedOverMetered(true)
 
-                val dm = context.getSystemService(Context.DOWNLOAD_SERVICE)
-                        as DownloadManager
+                val dm = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
                 dm.enqueue(request)
 
                 downloadRepository.download(
@@ -79,10 +87,10 @@ class DetailViewModel @Inject constructor(
                         id           = "${episode.id}",
                         podcastId    = podcast.id,
                         podcastTitle = podcast.title,
-                        episodeTitle = episode.title,
+                        episodeTitle = safeTitle,
                         artworkUrl   = episode.image ?: podcast.artworkUrl,
-                        audioUrl     = episode.audioUrl,
-                        duration     = "${episode.duration / 60} min"
+                        audioUrl     = audioUrl,
+                        duration     = if ((episode.duration ?: 0) > 0) "${episode.duration!! / 60} min" else "Durée inconnue"
                     )
                 )
             } catch (e: Exception) {
