@@ -46,5 +46,6 @@ class PodcastIndexRepository @Inject constructor(
 
     suspend fun getEpisodes(feedId: Long): List<PodcastIndexEpisode> {
         return api.getEpisodesByFeedId(feedId).items
+            .filter { it.id != null && !it.audioUrl.isNullOrBlank() }
     }
 }
