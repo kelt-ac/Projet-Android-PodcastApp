@@ -48,13 +48,12 @@ class AuthViewModel @Inject constructor(
             is AuthIntent.Login          -> login()
             is AuthIntent.Register       -> register()
             is AuthIntent.LoginWithGoogle   -> { }
-            is AuthIntent.LoginWithFacebook -> { }
 
             // ── Mot de passe oublié ──────────────────────────
             is AuthIntent.OpenForgotPasswordDialog ->
                 _state.value = _state.value.copy(
                     showForgotPasswordDialog = true,
-                    resetEmail = _state.value.email, // pré-remplit avec l'email déjà saisi
+                    resetEmail = _state.value.email,
                     resetMessage = null,
                     resetSuccess = false
                 )
