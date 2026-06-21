@@ -49,6 +49,24 @@ class AuthViewModel @Inject constructor(
             is AuthIntent.Register       -> register()
             is AuthIntent.LoginWithGoogle   -> { }
             is AuthIntent.LoginWithFacebook -> { }
+
+            // ── Mot de passe oublié ──────────────────────────
+            is AuthIntent.OpenForgotPasswordDialog ->
+                _state.value = _state.value.copy(
+                    showForgotPasswordDialog = true,
+                    resetEmail = _state.value.email, // pré-remplit avec l'email déjà saisi
+                    resetMessage = null,
+                    resetSuccess = false
+                )
+            is AuthIntent.DismissForgotPasswordDialog ->
+                _state.value = _state.value.copy(
+                    showForgotPasswordDialog = false,
+                    resetMessage = null,
+                    resetSuccess = false
+                )
+            is AuthIntent.ResetEmailChanged ->
+                _state.value = _state.value.copy(resetEmail = intent.email)
+            is AuthIntent.SendPasswordReset -> sendPasswordResetEmail()
         }
     }
 
@@ -140,6 +158,32 @@ class AuthViewModel @Inject constructor(
                 _state.value = _state.value.copy(
                     isLoading    = false,
                     errorMessage = "Erreur : ${e.message}"
+                )
+            }
+        }
+    }
+
+    // ── Mot de passe oublié ───────────────────────────────────
+    private fun sendPasswordResetEmail() {
+        val email = _state.value.resetEmail.trim()
+        if (email.isEmpty()) {
+            _state.value = _state.value.copy(resetMessage = "Veuillez saisir votre email")
+            return
+        }
+        viewModelScope.launch {
+            _state.value = _state.value.copy(isResetLoading = true, resetMessage = null)
+            try {
+                auth.sendPasswordResetEmail(email).await()
+                _state.value = _state.value.copy(
+                    isResetLoading = false,
+                    resetSuccess = true,
+                    resetMessage = "Email de réinitialisation envoyé ! Vérifiez votre boîte de réception."
+                )
+            } catch (e: Exception) {
+                _state.value = _state.value.copy(
+                    isResetLoading = false,
+                    resetSuccess = false,
+                    resetMessage = "Erreur : impossible d'envoyer l'email. Vérifiez l'adresse saisie."
                 )
             }
         }

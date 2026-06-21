@@ -39,7 +39,12 @@ data class AuthViewState(
     val errorMessage: String? = null,
     val isLoginTab: Boolean = true,
     val passwordVisible: Boolean = false,
-    val isLoggedIn: Boolean = false
+    val isLoggedIn: Boolean = false,
+    val showForgotPasswordDialog: Boolean = false,
+    val resetEmail: String = "",
+    val isResetLoading: Boolean = false,
+    val resetMessage: String? = null,
+    val resetSuccess: Boolean = false
 )
 
 sealed class AuthIntent {
@@ -51,6 +56,10 @@ sealed class AuthIntent {
     object Register                                : AuthIntent()
     object LoginWithGoogle                         : AuthIntent()
     object LoginWithFacebook                       : AuthIntent()
+    object OpenForgotPasswordDialog                : AuthIntent()
+    object DismissForgotPasswordDialog             : AuthIntent()
+    data class ResetEmailChanged(val email: String): AuthIntent()
+    object SendPasswordReset                       : AuthIntent()
 }
 
 // ── Écran principal ────────────────────────────────────────────
@@ -124,7 +133,7 @@ fun LoginScreen(
                             modifier = Modifier
                                 .align(Alignment.End)
                                 .padding(top = 6.dp)
-                                .clickable { }
+                                .clickable { onIntent(AuthIntent.OpenForgotPasswordDialog) }
                         )
                     }
 
@@ -238,6 +247,21 @@ fun LoginScreen(
                     modifier   = Modifier.clickable { onIntent(AuthIntent.ToggleTab) }
                 )
             }
+        }
+
+        // ── Dialogue mot de passe oublié ────────────────────────
+        // Placé au niveau racine du Box (indépendant du flux du Column
+        // scrollable) car AlertDialog s'affiche dans sa propre fenêtre.
+        if (state.showForgotPasswordDialog) {
+            ForgotPasswordDialog(
+                email = state.resetEmail,
+                isLoading = state.isResetLoading,
+                message = state.resetMessage,
+                success = state.resetSuccess,
+                onEmailChange = { onIntent(AuthIntent.ResetEmailChanged(it)) },
+                onSend = { onIntent(AuthIntent.SendPasswordReset) },
+                onDismiss = { onIntent(AuthIntent.DismissForgotPasswordDialog) }
+            )
         }
     }
 }
@@ -459,6 +483,100 @@ private object Icons {
             modifier = Modifier.size(18.dp)
         )
     }
+}
+
+@Composable
+private fun ForgotPasswordDialog(
+    email: String,
+    isLoading: Boolean,
+    message: String?,
+    success: Boolean,
+    onEmailChange: (String) -> Unit,
+    onSend: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = Color.White,
+        shape = RoundedCornerShape(20.dp),
+        title = {
+            Text(
+                text = "Mot de passe oublié",
+                fontWeight = FontWeight.Bold,
+                color = PrimaryDark,
+                fontSize = 18.sp
+            )
+        },
+        text = {
+            Column {
+                Text(
+                    text = "Saisissez votre email, nous vous enverrons un lien de réinitialisation.",
+                    fontSize = 13.sp,
+                    color = TextSecondary
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = onEmailChange,
+                    placeholder = { Text("nom@exemple.com", color = Color(0xFFBBBBBB), fontSize = 13.sp) },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    singleLine = true,
+                    enabled = !success,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = PrimaryMedium,
+                        unfocusedBorderColor = Color(0xFFE0E0F0),
+                        focusedContainerColor = Color(0xFFFAFAFA),
+                        unfocusedContainerColor = Color(0xFFFAFAFA),
+                    )
+                )
+                message?.let {
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Text(
+                        text = it,
+                        fontSize = 12.sp,
+                        color = if (success) Color(0xFF2E7D32) else MaterialTheme.colorScheme.error
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            if (!success) {
+                Button(
+                    onClick = onSend,
+                    enabled = !isLoading,
+                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryDark),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    if (isLoading) {
+                        CircularProgressIndicator(
+                            color = Color.White,
+                            modifier = Modifier.size(16.dp),
+                            strokeWidth = 2.dp
+                        )
+                    } else {
+                        Text("Envoyer", color = Color.White)
+                    }
+                }
+            } else {
+                Button(
+                    onClick = onDismiss,
+                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryDark),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text("Fermer", color = Color.White)
+                }
+            }
+        },
+        dismissButton = {
+            if (!success) {
+                TextButton(onClick = onDismiss) {
+                    Text("Annuler", color = TextSecondary)
+                }
+            }
+        }
+    )
 }
 
 // ── Preview ────────────────────────────────────────────────────
