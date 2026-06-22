@@ -47,7 +47,7 @@ fun PlayerScreen(
                         text       = "Lecture en cours",
                         fontSize   = 16.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color      = PrimaryDark
+                        color      = MaterialTheme.colorScheme.onSurface
                     )
                 },
                 navigationIcon = {
@@ -56,16 +56,17 @@ fun PlayerScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.White
+                    containerColor = MaterialTheme.colorScheme.surface
                 )
             )
-        }
+        },
+        containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .background(Color(0xFFF0EEF8))
+                .background(MaterialTheme.colorScheme.background)
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -88,7 +89,7 @@ fun PlayerScreen(
                 text       = podcast.title,
                 fontSize   = 20.sp,
                 fontWeight = FontWeight.Bold,
-                color      = PrimaryDark,
+                color      = MaterialTheme.colorScheme.onBackground,
                 textAlign  = TextAlign.Center,
                 maxLines   = 2,
                 overflow   = TextOverflow.Ellipsis
@@ -114,9 +115,9 @@ fun PlayerScreen(
                         viewModel.handleIntent(PlayerIntent.SeekTo(newPosition))
                     },
                     colors = SliderDefaults.colors(
-                        thumbColor       = PrimaryDark,
-                        activeTrackColor = PrimaryDark,
-                        inactiveTrackColor = Color(0xFFE0E0F0)
+                        thumbColor       = MaterialTheme.colorScheme.primary,
+                        activeTrackColor = MaterialTheme.colorScheme.primary,
+                        inactiveTrackColor = MaterialTheme.colorScheme.outline
                     ),
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -150,7 +151,12 @@ fun PlayerScreen(
                     onClick  = { viewModel.handleIntent(PlayerIntent.SeekBackward) },
                     modifier = Modifier.size(56.dp)
                 ) {
-                    Text("⏮ 15s", fontSize = 12.sp, color = PrimaryDark, textAlign = TextAlign.Center)
+                    Text(
+                        "⏮ 15s",
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        textAlign = TextAlign.Center
+                    )
                 }
 
                 // Play/Pause
@@ -158,7 +164,7 @@ fun PlayerScreen(
                     modifier = Modifier
                         .size(72.dp)
                         .clip(CircleShape)
-                        .background(PrimaryDark),
+                        .background(MaterialTheme.colorScheme.primary),
                     contentAlignment = Alignment.Center
                 ) {
                     IconButton(
@@ -167,7 +173,7 @@ fun PlayerScreen(
                         Text(
                             text     = if (state.isPlaying) "⏸" else "▶",
                             fontSize = 28.sp,
-                            color    = Color.White
+                            color    = MaterialTheme.colorScheme.onPrimary
                         )
                     }
                 }
@@ -177,7 +183,12 @@ fun PlayerScreen(
                     onClick  = { viewModel.handleIntent(PlayerIntent.SeekForward) },
                     modifier = Modifier.size(56.dp)
                 ) {
-                    Text("30s ⏭", fontSize = 12.sp, color = PrimaryDark, textAlign = TextAlign.Center)
+                    Text(
+                        "30s ⏭",
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        textAlign = TextAlign.Center
+                    )
                 }
             }
 
@@ -197,8 +208,8 @@ fun PlayerScreen(
                         colors   = FilterChipDefaults.filterChipColors(
                             selectedContainerColor = PrimaryDark,
                             selectedLabelColor     = Color.White,
-                            containerColor         = Color.White,
-                            labelColor             = PrimaryDark
+                            containerColor         = MaterialTheme.colorScheme.surface,
+                            labelColor             = MaterialTheme.colorScheme.onSurface
                         )
                     )
                 }
@@ -208,7 +219,7 @@ fun PlayerScreen(
 
             // ── Indicateur de chargement ───────────────────
             if (state.isLoading) {
-                CircularProgressIndicator(color = PrimaryDark)
+                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
             }
         }
     }
