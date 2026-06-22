@@ -42,7 +42,7 @@ fun DownloadsScreen(
                         text       = "📥 Téléchargements",
                         fontSize   = 20.sp,
                         fontWeight = FontWeight.Bold,
-                        color      = PrimaryDark
+                        color      = MaterialTheme.colorScheme.onSurface
                     )
                 },
                 navigationIcon = {
@@ -51,10 +51,11 @@ fun DownloadsScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.White
+                    containerColor = MaterialTheme.colorScheme.surface
                 )
             )
-        }
+        },
+        containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
         when {
             state.downloads.isEmpty() -> {
@@ -73,7 +74,7 @@ fun DownloadsScreen(
                             text       = "Aucun téléchargement",
                             fontSize   = 18.sp,
                             fontWeight = FontWeight.SemiBold,
-                            color      = PrimaryDark
+                            color      = MaterialTheme.colorScheme.onBackground
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
@@ -86,11 +87,11 @@ fun DownloadsScreen(
                         Button(
                             onClick = onBack,
                             colors  = ButtonDefaults.buttonColors(
-                                containerColor = PrimaryDark
+                                containerColor = MaterialTheme.colorScheme.primary
                             ),
                             shape = RoundedCornerShape(12.dp)
                         ) {
-                            Text("Découvrir des podcasts", color = Color.White)
+                            Text("Découvrir des podcasts", color = MaterialTheme.colorScheme.onPrimary)
                         }
                     }
                 }
@@ -101,7 +102,7 @@ fun DownloadsScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(padding)
-                        .background(Color(0xFFF0EEF8)),
+                        .background(MaterialTheme.colorScheme.background),
                     contentPadding = PaddingValues(12.dp)
                 ) {
                     items(
@@ -146,7 +147,7 @@ fun DownloadItem(
             .fillMaxWidth()
             .padding(vertical = 6.dp),
         shape     = RoundedCornerShape(12.dp),
-        colors    = CardDefaults.cardColors(containerColor = Color.White),
+        colors    = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
@@ -167,7 +168,7 @@ fun DownloadItem(
                     text       = episode.episodeTitle,
                     fontSize   = 13.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color      = PrimaryDark,
+                    color      = MaterialTheme.colorScheme.onSurface,
                     maxLines   = 2,
                     overflow   = TextOverflow.Ellipsis
                 )
@@ -182,7 +183,7 @@ fun DownloadItem(
                     text     = if (isLocalFileExists) "⬇️ Disponible hors ligne"
                     else "☁️ En ligne uniquement",
                     fontSize = 11.sp,
-                    color    = if (isLocalFileExists) PrimaryDark else TextSecondary
+                    color    = if (isLocalFileExists) MaterialTheme.colorScheme.onSurface else TextSecondary
                 )
             }
             Spacer(modifier = Modifier.width(8.dp))
@@ -196,7 +197,7 @@ fun DownloadItem(
                     onPlay(playUrl)
                 }
             ) {
-                Text("▶", fontSize = 18.sp, color = PrimaryDark)
+                Text("▶", fontSize = 18.sp, color = MaterialTheme.colorScheme.onSurface)
             }
             IconButton(onClick = onDelete) {
                 Text("🗑️", fontSize = 18.sp)

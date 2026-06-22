@@ -43,7 +43,7 @@ fun SubscriptionsScreen(
                         text       = "⭐ Mes Abonnements",
                         fontSize   = 20.sp,
                         fontWeight = FontWeight.Bold,
-                        color      = PrimaryDark
+                        color      = MaterialTheme.colorScheme.onSurface
                     )
                 },
                 navigationIcon = {
@@ -52,10 +52,11 @@ fun SubscriptionsScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.White
+                    containerColor = MaterialTheme.colorScheme.surface
                 )
             )
-        }
+        },
+        containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
         when {
             state.isLoading -> {
@@ -63,7 +64,7 @@ fun SubscriptionsScreen(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    CircularProgressIndicator(color = PrimaryDark)
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                 }
             }
 
@@ -83,7 +84,7 @@ fun SubscriptionsScreen(
                             text       = "Aucun abonnement",
                             fontSize   = 18.sp,
                             fontWeight = FontWeight.SemiBold,
-                            color      = PrimaryDark
+                            color      = MaterialTheme.colorScheme.onBackground
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
@@ -96,11 +97,11 @@ fun SubscriptionsScreen(
                         Button(
                             onClick = onBack,
                             colors  = ButtonDefaults.buttonColors(
-                                containerColor = PrimaryDark
+                                containerColor = MaterialTheme.colorScheme.primary
                             ),
                             shape = RoundedCornerShape(12.dp)
                         ) {
-                            Text("Découvrir des podcasts", color = Color.White)
+                            Text("Découvrir des podcasts", color = MaterialTheme.colorScheme.onPrimary)
                         }
                     }
                 }
@@ -112,7 +113,7 @@ fun SubscriptionsScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(padding)
-                        .background(Color(0xFFF0EEF8)),
+                        .background(MaterialTheme.colorScheme.background),
                     contentPadding = PaddingValues(12.dp),
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     verticalArrangement   = Arrangement.spacedBy(12.dp)
@@ -139,7 +140,7 @@ fun SubscriptionCard(
             .fillMaxWidth()
             .clickable { onClick() },
         shape     = RoundedCornerShape(12.dp),
-        colors    = CardDefaults.cardColors(containerColor = Color.White),
+        colors    = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
@@ -160,7 +161,7 @@ fun SubscriptionCard(
                 text       = podcast.title,
                 fontSize   = 13.sp,
                 fontWeight = FontWeight.SemiBold,
-                color      = PrimaryDark,
+                color      = MaterialTheme.colorScheme.onSurface,
                 maxLines   = 2,
                 overflow   = TextOverflow.Ellipsis,
                 modifier   = Modifier.fillMaxWidth()
