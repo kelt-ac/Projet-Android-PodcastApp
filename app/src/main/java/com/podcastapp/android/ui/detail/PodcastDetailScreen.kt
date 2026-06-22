@@ -19,7 +19,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.podcastapp.android.core.PrimaryDark
-import com.podcastapp.android.core.PrimaryLight
 import com.podcastapp.android.core.PrimaryMedium
 import com.podcastapp.android.core.TextSecondary
 import com.podcastapp.android.domain.model.Podcast
@@ -60,7 +59,7 @@ fun PodcastDetailScreen(
                         text       = podcast.title,
                         fontSize   = 16.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color      = PrimaryDark,
+                        color      = MaterialTheme.colorScheme.onSurface,
                         maxLines   = 1,
                         overflow   = TextOverflow.Ellipsis
                     )
@@ -71,16 +70,17 @@ fun PodcastDetailScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.White
+                    containerColor = MaterialTheme.colorScheme.surface
                 )
             )
-        }
+        },
+        containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .background(Color(0xFFF0EEF8)),
+                .background(MaterialTheme.colorScheme.background),
             contentPadding = PaddingValues(bottom = 32.dp)
         ) {
             // ── Cover + infos principales ──────────────
@@ -88,7 +88,7 @@ fun PodcastDetailScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(Color.White)
+                        .background(MaterialTheme.colorScheme.surface)
                         .padding(20.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -105,7 +105,7 @@ fun PodcastDetailScreen(
                         text       = podcast.title,
                         fontSize   = 20.sp,
                         fontWeight = FontWeight.Bold,
-                        color      = PrimaryDark,
+                        color      = MaterialTheme.colorScheme.onSurface,
                         textAlign  = androidx.compose.ui.text.style.TextAlign.Center
                     )
                     Spacer(modifier = Modifier.height(4.dp))
@@ -145,12 +145,14 @@ fun PodcastDetailScreen(
                             .height(48.dp),
                         shape  = RoundedCornerShape(12.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = if (isSubscribed) PrimaryLight else PrimaryDark
+                            containerColor = if (isSubscribed) MaterialTheme.colorScheme.primaryContainer
+                            else MaterialTheme.colorScheme.primary
                         )
                     ) {
                         Text(
                             text       = if (isSubscribed) "✓ Abonné" else "S'abonner",
-                            color      = if (isSubscribed) PrimaryDark else Color.White,
+                            color      = if (isSubscribed) MaterialTheme.colorScheme.onPrimaryContainer
+                            else MaterialTheme.colorScheme.onPrimary,
                             fontWeight = FontWeight.SemiBold
                         )
                     }
@@ -163,7 +165,7 @@ fun PodcastDetailScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(Color.White)
+                        .background(MaterialTheme.colorScheme.surface)
                         .padding(16.dp),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
@@ -172,14 +174,14 @@ fun PodcastDetailScreen(
                         modifier = Modifier
                             .height(40.dp)
                             .width(1.dp),
-                        color = Color(0xFFE0E0F0)
+                        color = MaterialTheme.colorScheme.outline
                     )
                     StatItem(label = "Genre", value = podcast.genre)
                     Divider(
                         modifier = Modifier
                             .height(40.dp)
                             .width(1.dp),
-                        color = Color(0xFFE0E0F0)
+                        color = MaterialTheme.colorScheme.outline
                     )
                     StatItem(label = "Auteur", value = podcast.author.take(15))
                 }
@@ -191,14 +193,14 @@ fun PodcastDetailScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(Color.White)
+                        .background(MaterialTheme.colorScheme.surface)
                         .padding(16.dp)
                 ) {
                     Text(
                         text       = "À propos",
                         fontSize   = 16.sp,
                         fontWeight = FontWeight.Bold,
-                        color      = PrimaryDark
+                        color      = MaterialTheme.colorScheme.onSurface
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
@@ -219,14 +221,14 @@ fun PodcastDetailScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(Color.White)
+                        .background(MaterialTheme.colorScheme.surface)
                         .padding(16.dp)
                 ) {
                     Text(
                         text       = "🎙️ Épisodes",
                         fontSize   = 16.sp,
                         fontWeight = FontWeight.Bold,
-                        color      = PrimaryDark
+                        color      = MaterialTheme.colorScheme.onSurface
                     )
                 }
             }
@@ -239,7 +241,7 @@ fun PodcastDetailScreen(
                             .padding(16.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        CircularProgressIndicator(color = PrimaryDark)
+                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                     }
                 }
             } else if (detailState.episodes.isEmpty()) {
@@ -288,7 +290,7 @@ fun StatItem(label: String, value: String) {
             text       = value,
             fontSize   = 14.sp,
             fontWeight = FontWeight.Bold,
-            color      = PrimaryDark,
+            color      = MaterialTheme.colorScheme.onSurface,
             maxLines   = 1,
             overflow   = TextOverflow.Ellipsis
         )
@@ -312,7 +314,7 @@ fun EpisodeItem(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.White)
+                .background(MaterialTheme.colorScheme.surface)
                 .padding(horizontal = 16.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -328,7 +330,7 @@ fun EpisodeItem(
                     text       = title,
                     fontSize   = 13.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color      = PrimaryDark,
+                    color      = MaterialTheme.colorScheme.onSurface,
                     maxLines   = 2,
                     overflow   = TextOverflow.Ellipsis
                 )
@@ -339,12 +341,12 @@ fun EpisodeItem(
                 )
             }
             IconButton(onClick = onPlay) {
-                Text("▶", fontSize = 18.sp, color = PrimaryDark)
+                Text("▶", fontSize = 18.sp, color = MaterialTheme.colorScheme.onSurface)
             }
             IconButton(onClick = onDownload) {
                 Text("📥", fontSize = 16.sp)
             }
         }
-        HorizontalDivider(color = Color(0xFFE0E0F0))
+        HorizontalDivider(color = MaterialTheme.colorScheme.outline)
     }
 }

@@ -23,10 +23,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.podcastapp.android.core.BackgroundLight
 import com.podcastapp.android.core.PodcastAppTheme
 import com.podcastapp.android.core.PrimaryDark
-import com.podcastapp.android.core.PrimaryLight
 import com.podcastapp.android.core.PrimaryMedium
 import com.podcastapp.android.core.TextSecondary
 
@@ -70,7 +68,7 @@ fun LoginScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(BackgroundLight)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         Column(
             modifier = Modifier
@@ -89,7 +87,7 @@ fun LoginScreen(
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
                 Column(modifier = Modifier.padding(20.dp)) {
@@ -157,19 +155,19 @@ fun LoginScreen(
                             .fillMaxWidth()
                             .height(50.dp),
                         shape  = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = PrimaryDark),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                         enabled = !state.isLoading
                     ) {
                         if (state.isLoading) {
                             CircularProgressIndicator(
-                                color  = Color.White,
+                                color  = MaterialTheme.colorScheme.onPrimary,
                                 modifier = Modifier.size(20.dp),
                                 strokeWidth = 2.dp
                             )
                         } else {
                             Text(
                                 text  = if (state.isLoginTab) "Se connecter" else "S'inscrire",
-                                color = Color.White,
+                                color = MaterialTheme.colorScheme.onPrimary,
                                 fontSize   = 15.sp,
                                 fontWeight = FontWeight.SemiBold
                             )
@@ -191,13 +189,13 @@ fun LoginScreen(
                             .height(48.dp),
                         shape  = RoundedCornerShape(12.dp),
                         border = androidx.compose.foundation.BorderStroke(
-                            1.dp, Color(0xFFE0E0F0)
+                            1.dp, MaterialTheme.colorScheme.outline
                         )
                     ) {
                         Text(text = "G  ", color = Color(0xFFEA4335), fontWeight = FontWeight.Bold)
                         Text(
                             text  = "Continuer avec Google",
-                            color = Color(0xFF333333),
+                            color = MaterialTheme.colorScheme.onSurface,
                             fontSize = 14.sp
                         )
                     }
@@ -220,7 +218,7 @@ fun LoginScreen(
                 )
                 Text(
                     text  = if (state.isLoginTab) "Rejoindre PodcastApp" else "Se connecter",
-                    color = PrimaryDark,
+                    color = MaterialTheme.colorScheme.primary,
                     fontSize   = 13.sp,
                     fontWeight = FontWeight.SemiBold,
                     modifier   = Modifier.clickable { onIntent(AuthIntent.ToggleTab) }
@@ -259,7 +257,7 @@ private fun LogoSection() {
                             .width(if (i == 1) 16.dp else if (i == 2) 20.dp else 22.dp)
                             .height(3.dp)
                             .clip(RoundedCornerShape(2.dp))
-                            .background(PrimaryDark)
+                            .background(MaterialTheme.colorScheme.onBackground)
                     )
                 }
             }
@@ -267,7 +265,7 @@ private fun LogoSection() {
                 text       = "PodcastApp",
                 fontSize   = 22.sp,
                 fontWeight = FontWeight.Bold,
-                color      = PrimaryDark
+                color      = MaterialTheme.colorScheme.onBackground
             )
         }
         Spacer(modifier = Modifier.height(6.dp))
@@ -285,7 +283,7 @@ private fun TabRow(isLoginTab: Boolean, onToggle: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(10.dp))
-            .background(Color(0xFFF5F5FA))
+            .background(MaterialTheme.colorScheme.surfaceVariant)
             .padding(3.dp)
     ) {
         listOf("Connexion" to true, "Inscription" to false).forEach { (label, isLogin) ->
@@ -294,12 +292,12 @@ private fun TabRow(isLoginTab: Boolean, onToggle: () -> Unit) {
                     .weight(1f)
                     .clip(RoundedCornerShape(8.dp))
                     .background(
-                        if (isLoginTab == isLogin) Color.White
+                        if (isLoginTab == isLogin) MaterialTheme.colorScheme.surface
                         else Color.Transparent
                     )
                     .border(
                         width = if (isLoginTab == isLogin) 0.5.dp else 0.dp,
-                        color = if (isLoginTab == isLogin) Color(0xFFE0E0F0) else Color.Transparent,
+                        color = if (isLoginTab == isLogin) MaterialTheme.colorScheme.outline else Color.Transparent,
                         shape = RoundedCornerShape(8.dp)
                     )
                     .clickable { if (isLoginTab != isLogin) onToggle() }
@@ -310,7 +308,7 @@ private fun TabRow(isLoginTab: Boolean, onToggle: () -> Unit) {
                     text       = label,
                     fontSize   = 13.sp,
                     fontWeight = if (isLoginTab == isLogin) FontWeight.SemiBold else FontWeight.Normal,
-                    color      = if (isLoginTab == isLogin) PrimaryDark else TextSecondary,
+                    color      = if (isLoginTab == isLogin) MaterialTheme.colorScheme.onSurface else TextSecondary,
                     textAlign  = TextAlign.Center
                 )
             }
@@ -341,9 +339,11 @@ private fun AuthTextField(
             keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor   = PrimaryMedium,
-                unfocusedBorderColor = Color(0xFFE0E0F0),
-                focusedContainerColor   = Color(0xFFFAFAFA),
-                unfocusedContainerColor = Color(0xFFFAFAFA),
+                unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                focusedContainerColor   = MaterialTheme.colorScheme.surface,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                focusedTextColor   = MaterialTheme.colorScheme.onSurface,
+                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
             )
         )
     }
@@ -391,9 +391,11 @@ private fun PasswordTextField(
             singleLine = true,
             colors     = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor      = PrimaryMedium,
-                unfocusedBorderColor    = Color(0xFFE0E0F0),
-                focusedContainerColor   = Color(0xFFFAFAFA),
-                unfocusedContainerColor = Color(0xFFFAFAFA),
+                unfocusedBorderColor    = MaterialTheme.colorScheme.outline,
+                focusedContainerColor   = MaterialTheme.colorScheme.surface,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                focusedTextColor   = MaterialTheme.colorScheme.onSurface,
+                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
             )
         )
     }
@@ -405,13 +407,13 @@ private fun OrDivider() {
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.fillMaxWidth()
     ) {
-        HorizontalDivider(modifier = Modifier.weight(1f), color = Color(0xFFE0E0F0))
+        HorizontalDivider(modifier = Modifier.weight(1f), color = MaterialTheme.colorScheme.outline)
         Text(
             text     = "  OU  ",
             fontSize = 12.sp,
             color    = TextSecondary
         )
-        HorizontalDivider(modifier = Modifier.weight(1f), color = Color(0xFFE0E0F0))
+        HorizontalDivider(modifier = Modifier.weight(1f), color = MaterialTheme.colorScheme.outline)
     }
 }
 
@@ -430,7 +432,7 @@ private fun FeaturesRow() {
                 modifier = Modifier
                     .weight(1f)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(PrimaryLight)
+                    .background(MaterialTheme.colorScheme.primaryContainer)
                     .padding(10.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -441,9 +443,13 @@ private fun FeaturesRow() {
                         text       = label,
                         fontSize   = 11.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color      = PrimaryDark
+                        color      = MaterialTheme.colorScheme.onPrimaryContainer
                     )
-                    Text(text = sub, fontSize = 10.sp, color = PrimaryMedium)
+                    Text(
+                        text = sub,
+                        fontSize = 10.sp,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
                 }
             }
         }
@@ -474,13 +480,13 @@ private fun ForgotPasswordDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        containerColor = Color.White,
+        containerColor = MaterialTheme.colorScheme.surface,
         shape = RoundedCornerShape(20.dp),
         title = {
             Text(
                 text = "Mot de passe oublié",
                 fontWeight = FontWeight.Bold,
-                color = PrimaryDark,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 18.sp
             )
         },
@@ -503,9 +509,11 @@ private fun ForgotPasswordDialog(
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = PrimaryMedium,
-                        unfocusedBorderColor = Color(0xFFE0E0F0),
-                        focusedContainerColor = Color(0xFFFAFAFA),
-                        unfocusedContainerColor = Color(0xFFFAFAFA),
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                        focusedContainerColor = MaterialTheme.colorScheme.surface,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
                     )
                 )
                 message?.let {
@@ -523,26 +531,26 @@ private fun ForgotPasswordDialog(
                 Button(
                     onClick = onSend,
                     enabled = !isLoading,
-                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryDark),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                     shape = RoundedCornerShape(12.dp)
                 ) {
                     if (isLoading) {
                         CircularProgressIndicator(
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onPrimary,
                             modifier = Modifier.size(16.dp),
                             strokeWidth = 2.dp
                         )
                     } else {
-                        Text("Envoyer", color = Color.White)
+                        Text("Envoyer", color = MaterialTheme.colorScheme.onPrimary)
                     }
                 }
             } else {
                 Button(
                     onClick = onDismiss,
-                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryDark),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                     shape = RoundedCornerShape(12.dp)
                 ) {
-                    Text("Fermer", color = Color.White)
+                    Text("Fermer", color = MaterialTheme.colorScheme.onPrimary)
                 }
             }
         },
