@@ -66,8 +66,6 @@ PodcastApp est une **application mobile Android native** permettant aux utilisat
 - **Internationalisation** : FR, EN, AR avec support RTL
 - Onboarding 3 pages au premier lancement
 - **Logo custom** avec adaptive icons pour tous les densités
-- Tests unitaires des ViewModels
-- Tests UI pour écrans Auth et Home
 - README et documentation architecture
 
 ---
@@ -215,7 +213,6 @@ podcast_index_api_secret=YOUR_SECRET
 | **Mini Player** | Barre persistante avec contrôles basiques |
 | **Abonnements** | Grille des podcasts suivis |
 | **Téléchargements** | Liste des épisodes téléchargés (offline) |
-| **Profil** | Avatar, paramètres (thème, langue) |
 
 ### Navigation
 
@@ -246,30 +243,6 @@ sealed class Route {
 - **API** : Authentification Podcast Index via SHA-1 (build secrets)
 - **Permissions** : Audio focus, internet, lecture/écriture (DownloadManager)
 
----
-
-## 🧪 Tests
-
-### Tests unitaires (ViewModels)
-
-```bash
-./gradlew testDebugUnitTest
-```
-
-Couverture :
-- `AuthViewModel` : Login, signup, session persistence
-- `PodcastViewModel` : Recherche, filtrage, pagination
-- `PlayerViewModel` : Play/pause, vitesse, téléchargements
-
-### Tests UI (Composables)
-
-```bash
-./gradlew connectedAndroidTest
-```
-
-Couverture :
-- `AuthScreen` : Validation formulaires
-- `HomeScreen` : Affichage des listes
 
 ---
 
